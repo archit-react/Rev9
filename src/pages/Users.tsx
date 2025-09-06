@@ -174,7 +174,7 @@ function CoinFountain() {
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
-
+  const [loading, setLoading] = useState(true);
 
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -207,6 +207,8 @@ export default function UsersPage() {
         }
       } catch (err) {
         console.error("Failed to fetch users:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchUsers();
@@ -262,7 +264,7 @@ export default function UsersPage() {
 
   /* ------------------------------ Render ------------------------------- */
 
-
+  if (loading) return <p className="p-6">Loading users...</p>;
 
   return (
     // relative so the footer image can be absolutely positioned without adding height
