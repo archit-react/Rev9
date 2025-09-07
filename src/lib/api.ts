@@ -41,12 +41,9 @@ export function authHeaders(): Record<string, string> {
 }
 
 type FetchJsonOptions = Omit<RequestInit, "body" | "headers"> & {
-  // set to false to skip attaching the Authorization header
-  withAuth?: boolean;
-  // pass a JS object to be JSON.stringified
-  json?: unknown;
-  // keep headers but normalize to HeadersInit here to avoid spreading issues
-  headers?: HeadersInit;
+  withAuth?: boolean; // set to false to skip attaching the Authorization header
+  json?: unknown; // pass a JS object to be JSON.stringified
+  headers?: HeadersInit; // keep headers but normalize to HeadersInit here
 };
 
 /** Normalize HeadersInit → plain record for safe merging */
@@ -64,7 +61,6 @@ function toHeaderRecord(h?: HeadersInit): Record<string, string> {
     for (const [key, value] of h) obj[key] = String(value);
     return obj;
   }
-  // already a plain record
   return { ...(h as Record<string, string>) };
 }
 
@@ -110,6 +106,11 @@ export async function fetchJson<T = unknown>(
       (data as { error?: string; message?: string })?.error ||
       (data as { message?: string })?.message ||
       `Request failed (${res.status})`;
+    // gentle hook for 401s without forcing navigation here
+    if (res.status === 401 && isBrowser) {
+      // hint for callers/guards
+      // (we intentionally do not redirect here to avoid surprising flows)
+    }
     throw new Error(message);
   }
 

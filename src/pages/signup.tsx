@@ -1,6 +1,18 @@
+// src/pages/signup.tsx
 import { useState, type SVGProps } from "react";
-import { api } from "@/lib/api"; // ← add this
+import { useNavigate } from "react-router-dom";
+import { api } from "@/lib/api"; // keep your existing helper
 
+// ---- Types & type-guard to avoid `any` --------------------------------
+type ApiErrorShape = { error?: string; message?: string };
+function isApiErrorShape(x: unknown): x is ApiErrorShape {
+  return (
+    typeof x === "object" &&
+    x !== null &&
+    // We don't require both; presence of either key is enough to treat as error payload
+    ("error" in x || "message" in x)
+  );
+}
 
 export default function Signup() {
   // data
@@ -13,8 +25,10 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [reveal, setReveal] = useState(false); // 👁️ toggle
 
+  const navigate = useNavigate();
+
   // safe JSON parsing
-  const parseJson = async (res: Response) => {
+  const parseJson = async (res: Response): Promise<unknown> => {
     try {
       return await res.json();
     } catch {
@@ -38,13 +52,17 @@ export default function Signup() {
       const data = await parseJson(res);
 
       if (!res.ok) {
-        const msg =
-          data?.error || data?.message || `Registration failed (${res.status})`;
+        const msg = isApiErrorShape(data)
+          ? data.error || data.message || `Registration failed (${res.status})`
+          : `Registration failed (${res.status})`;
         throw new Error(msg);
       }
 
-      alert("Registration successful, please login!");
-      // navigate("/login"); - would normally redirect here
+      // ✅ Redirect to Login with a success toast message
+      navigate("/login", {
+        replace: true,
+        state: { toast: "Account created. Please sign in." },
+      });
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Server error. Try again later."
@@ -108,6 +126,33 @@ export default function Signup() {
     );
   }
 
+  // Minimal inline spinner (no deps)
+  function Spinner() {
+    return (
+      <svg
+        className="animate-spin h-5 w-5 mr-2"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+          fill="none"
+          opacity="0.25"
+        />
+        <path
+          d="M12 2a10 10 0 0 1 10 10"
+          stroke="currentColor"
+          strokeWidth="4"
+          fill="none"
+        />
+      </svg>
+    );
+  }
+
   return (
     <div className="bg-white min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md px-6">
@@ -131,7 +176,7 @@ export default function Signup() {
         )}
 
         {/* Form */}
-        <div>
+        <form onSubmit={handleRegister} noValidate>
           {/* Username */}
           <div className="mb-4">
             <input
@@ -203,14 +248,21 @@ export default function Signup() {
 
           {/* CTA */}
           <button
-            type="button"
-            onClick={handleRegister}
+            type="submit"
             disabled={loading}
-            className={ctaButton}
+            aria-busy={loading}
+            className={`${ctaButton} inline-flex items-center justify-center`}
           >
-            Continue
+            {loading ? (
+              <>
+                <Spinner />
+                Creating…
+              </>
+            ) : (
+              "Continue"
+            )}
           </button>
-        </div>
+        </form>
 
         {/* Already have an account */}
         <p className="text-center text-sm text-gray-600 mt-6">

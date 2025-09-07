@@ -19,7 +19,6 @@ function isTokenValid(token: string): boolean {
 
     // base64url -> base64
     const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-    // atob expects proper padding
     const pad = b64.length % 4 ? "=".repeat(4 - (b64.length % 4)) : "";
     const json = atob(b64 + pad);
     const payload = JSON.parse(json) as JwtPayload;
@@ -36,12 +35,20 @@ export default function ProtectedRoute({
   element,
   children,
 }: ProtectedRouteProps) {
-  const token = localStorage.getItem("token");
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   // If no token or expired/invalid, clear and redirect to login
   if (!token || !isTokenValid(token)) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      // preserve the place the user tried to go
+      const next = window.location.pathname + window.location.search;
+      return (
+        <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />
+      );
+    }
     return <Navigate to="/login" replace />;
   }
 

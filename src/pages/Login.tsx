@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type SVGProps } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { api } from "@/lib/api";
 
 /* ---------------- Money Rain (background only) ---------------- */
@@ -38,25 +38,18 @@ function MoneyRain() {
     <>
       <style>{`
   @keyframes money-fall {
-    0% {
-      /* start just above the viewport */
-      transform: translate3d(0, 0, 0) rotate(0deg);
-    }
-    100% {
-      /* fall well beyond the bottom before looping */
-      transform: translate3d(var(--drift, 0px), calc(100vh + 30vh), 0) rotate(720deg);
-    }
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    100% { transform: translate3d(var(--drift, 0px), calc(100vh + 30vh), 0) rotate(720deg); }
   }
   .money-item {
     position: absolute;
-    top: -30vh;                 /* start high off-screen */
+    top: -30vh;
     animation-name: money-fall;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     will-change: transform;
   }
 `}</style>
-
 
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden z-0"
@@ -135,6 +128,19 @@ function MoneyRain() {
 
 /* ----------------------------- Login ----------------------------- */
 
+// types + guards (no `any`)
+type ApiErrorShape = { error?: string; message?: string };
+function isApiErrorShape(x: unknown): x is ApiErrorShape {
+  return (
+    typeof x === "object" && x !== null && ("error" in x || "message" in x)
+  );
+}
+
+type LoginSuccessShape = {
+  token?: string;
+  user?: { role?: string; [k: string]: unknown };
+};
+
 export default function Login() {
   // data
   const [email, setEmail] = useState("");
@@ -145,8 +151,32 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPasswordStep, setShowPasswordStep] = useState(false);
   const [reveal, setReveal] = useState(false); // 👁️ toggle
+  const [entryToast, setEntryToast] = useState<string>("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // read `toast` from navigation state once, then clear it from history
+  useEffect(() => {
+    const state = location.state as { toast?: string } | null;
+    if (state?.toast) {
+      setEntryToast(state.toast);
+      // clear state so toast doesn't reappear on back/forward
+      navigate(".", { replace: true, state: null });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once on mount
+
+  // parse ?next=... for post-login redirect
+  const nextUrl = useMemo(() => {
+    try {
+      const sp = new URLSearchParams(location.search);
+      const next = sp.get("next");
+      return next && next.startsWith("/") ? next : null;
+    } catch {
+      return null;
+    }
+  }, [location.search]);
 
   // track in-flight request so we can safely abort on unmount / re-submit
   const controllerRef = useRef<AbortController | null>(null);
@@ -157,7 +187,7 @@ export default function Login() {
   }, []);
 
   // safe JSON parsing
-  const parseJson = async (res: Response) => {
+  const parseJson = async (res: Response): Promise<unknown> => {
     try {
       return await res.json();
     } catch {
@@ -220,19 +250,33 @@ export default function Login() {
         body: JSON.stringify({ email: email.trim(), password }),
       });
 
-      const data = await parseJson(res);
+      const data = (await parseJson(res)) as unknown;
+
       if (!res.ok) {
-        const msg =
-          data?.error || data?.message || `Login failed (${res.status})`;
+        const msg = isApiErrorShape(data)
+          ? data.error || data.message || `Login failed (${res.status})`
+          : `Login failed (${res.status})`;
         throw new Error(msg);
       }
 
-      localStorage.setItem("token", data.token);
-      if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
+      const payload = data as LoginSuccessShape;
 
-      const role = data?.user?.role;
-      if (role === "admin") navigate("/dashboard");
-      else navigate("/");
+      // Keep your current behavior: store token + user locally
+      if (payload.token) localStorage.setItem("token", payload.token);
+      if (payload.user)
+        localStorage.setItem("user", JSON.stringify(payload.user));
+
+      // Redirect priority:
+      // 1) ?next=/target (from ProtectedRoute),
+      // 2) your role-based fallback,
+      // 3) default "/"
+      if (nextUrl) {
+        navigate(nextUrl, { replace: true });
+      } else if (payload.user?.role === "admin") {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
 
       setPassword("");
     } catch (err: unknown) {
@@ -299,6 +343,33 @@ export default function Login() {
     );
   }
 
+  // Inline spinner (no deps)
+  function Spinner() {
+    return (
+      <svg
+        className="animate-spin h-5 w-5 mr-2"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+          fill="none"
+          opacity="0.25"
+        />
+        <path
+          d="M12 2a10 10 0 0 1 10 10"
+          stroke="currentColor"
+          strokeWidth="4"
+          fill="none"
+        />
+      </svg>
+    );
+  }
+
   return (
     // Make page relative so the background can absolutely fill it
     <div className="relative bg-white min-h-screen flex items-center justify-center">
@@ -306,6 +377,16 @@ export default function Login() {
       <MoneyRain />
 
       <div className="relative z-10 w-full max-w-md px-6">
+        {/* Entry toast (from signup redirect) */}
+        {entryToast && (
+          <div
+            role="status"
+            className="mb-4 rounded-lg border border-emerald-500/40 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+          >
+            {entryToast}
+          </div>
+        )}
+
         {/* Heading */}
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-2 antialiased tracking-tight leading-tight">
@@ -398,8 +479,20 @@ export default function Login() {
           </div>
 
           {/* CTA */}
-          <button type="submit" disabled={loading} className={ctaButton}>
-            Continue
+          <button
+            type="submit"
+            disabled={loading}
+            aria-busy={loading}
+            className={`${ctaButton} inline-flex items-center justify-center`}
+          >
+            {loading ? (
+              <>
+                <Spinner />
+                Signing in…
+              </>
+            ) : (
+              "Continue"
+            )}
           </button>
         </form>
 
