@@ -17,7 +17,6 @@ interface User {
   role: "admin" | "editor" | "user" | string;
   status: "Active" | "Inactive" | "Pending" | string;
   avatar?: string;
-  /** Optional activity percent (0–100). If missing we derive one deterministically. */
   activityPct?: number;
 }
 
@@ -40,7 +39,7 @@ const statusBadge = (status: string) => {
   const s = status.toLowerCase();
   if (s === "active") return "bg-emerald-500/15 text-emerald-400";
   if (s === "pending") return "bg-amber-500/15 text-amber-400";
-  return "bg-rose-500/15 text-rose-400"; // inactive / anything else
+  return "bg-rose-500/15 text-rose-400";
 };
 
 const toRoleKey = (role?: string): RoleKey => {
@@ -48,121 +47,44 @@ const toRoleKey = (role?: string): RoleKey => {
   if (r === "admin" || r === "editor" || r === "user") return r;
   return "other";
 };
-/* ----------------------- Decorative Coin Fountain ----------------------- */
-type CoinStyle = React.CSSProperties & Record<"--rise" | "--drift", string>;
 
-function Coin({
-  delay = 0,
-  left = 50,
-  size = 28,
-  rise = 38,
-  drift = 0,
-  duration = 2.8,
-}: {
-  delay?: number;
-  left?: number; // % from left
-  size?: number; // px
-  rise?: number; // vh upwards
-  drift?: number; // vw horizontal drift
-  duration?: number;
-}) {
-  const style: CoinStyle = {
-    left: `${left}%`,
-    width: size,
-    height: size,
-    animationDelay: `${delay}s`,
-    animationDuration: `${duration}s`,
-    "--rise": `${rise}vh`,
-    "--drift": `${drift}vw`,
-  };
+/* ---------------------- Unique Skeleton Components ---------------------- */
 
+function UserRowSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <span
-      aria-hidden
-      className="absolute bottom-[-48px] will-change-transform animate-coin pointer-events-none"
-      style={style}
-    >
-      <svg viewBox="0 0 100 100" className="block w-full h-full">
-        <defs>
-          <linearGradient id="coinGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--coin-edge)" />
-            <stop offset="60%" stopColor="var(--coin-fill)" />
-            <stop offset="100%" stopColor="var(--coin-shine)" />
-          </linearGradient>
-        </defs>
-        <circle
-          cx="50"
-          cy="50"
-          r="44"
-          fill="url(#coinGrad)"
-          stroke="var(--coin-edge)"
-          strokeWidth="6"
-        />
-        <circle
-          cx="50"
-          cy="50"
-          r="28"
-          fill="transparent"
-          stroke="var(--coin-ring)"
-          strokeWidth="8"
-        />
-        <text
-          x="50"
-          y="58"
-          textAnchor="middle"
-          fontSize="42"
-          fontWeight="700"
-          fill="var(--coin-symbol)"
-        >
-          $
-        </text>
-      </svg>
-    </span>
-  );
-}
+    <div className="space-y-5">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="flex items-center animate-pulse">
+          {/* Avatar + name */}
+          <div className="flex items-center w-1/3 min-w-[220px] pr-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800" />
+            <div className="ml-3 space-y-2">
+              <div className="h-3 w-24 rounded bg-gray-200/80 dark:bg-gray-700/80" />
+              <div className="h-2 w-16 rounded bg-gray-200/70 dark:bg-gray-700/70" />
+            </div>
+          </div>
 
-function CoinFountain() {
-  // Not a hook — safe to compute conditionally
-  const prefersReduced =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+          {/* Progress */}
+          <div className="flex-1 px-4">
+            <div className="h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+              <div className="h-full w-0 rounded-full bg-gradient-to-r from-indigo-300 via-indigo-400 to-indigo-300 dark:from-indigo-500 dark:via-indigo-600 dark:to-indigo-500 animate-[loading-bar_1.8s_infinite]" />
+            </div>
+          </div>
 
-  // Call hooks unconditionally; return [] when reduced motion is on
-  const coins = useMemo(() => {
-    if (prefersReduced)
-      return [] as Array<{
-        key: number;
-        delay: number;
-        left: number;
-        size: number;
-        rise: number;
-        drift: number;
-        duration: number;
-      }>;
-
-    const count = 6; // tweak density
-    return Array.from({ length: count }, (_, i) => ({
-      key: i,
-      delay: (i * 0.22) % 3.4,
-      left: Math.random() * 100,
-      size: 22 + Math.random() * 22,
-      rise: 24 + Math.random() * 26,
-      drift: -10 + Math.random() * 20,
-      duration: 2.6 + Math.random() * 0.9,
-    }));
-  }, [prefersReduced]);
-
-  // If there are no coins (reduced motion), render nothing
-  if (coins.length === 0) return null;
-
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-[55vh] overflow-visible z-10"
-    >
-      {coins.map(({ key, ...rest }) => (
-        <Coin key={key} {...rest} />
+          {/* Status */}
+          <div className="w-28 text-right">
+            <div className="inline-block h-5 w-16 rounded-full bg-gray-200 dark:bg-gray-700" />
+          </div>
+        </div>
       ))}
+
+      <style>{`
+        @keyframes loading-bar {
+          0% { transform: translateX(-100%); }
+          50% { transform: translateX(0%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }
@@ -171,15 +93,15 @@ function CoinFountain() {
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
-
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const PAGE_SIZE = 4;
 
-  /* ------------------------------- Fetch ------------------------------- */
-
   useEffect(() => {
+    let isMounted = true;
     const fetchUsers = async () => {
+      setLoading(true);
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(api("/api/users"), {
@@ -187,42 +109,42 @@ export default function UsersPage() {
         });
         const data: User[] | ApiError = await res.json();
 
-        if (res.ok && Array.isArray(data)) {
+        if (isMounted && res.ok && Array.isArray(data)) {
           const avatars = [user1, user2, user3];
           setUsers(
             data.map((u: User, i: number) => ({
               ...u,
-              // Use backend avatar only if it's a full URL; otherwise use our bundled images.
               avatar:
                 typeof u.avatar === "string" && /^https?:\/\//i.test(u.avatar)
                   ? u.avatar
                   : avatars[i % avatars.length],
             }))
           );
-        } else {
-          const err = (data as ApiError).error ?? "Error fetching users";
-          console.error("Error fetching users:", err);
+        } else if (!res.ok) {
+          console.error("Error fetching users:", (data as ApiError).error);
         }
       } catch (err) {
-        console.error("Failed to fetch users:", err);
+        if (isMounted) console.error("Failed to fetch users:", err);
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
     fetchUsers();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   /* ---------------------------- Derived data --------------------------- */
 
-  // Deterministic fallback activity % if not present
   const withActivity = useMemo(() => {
     return users.map((u, i) => {
       if (typeof u.activityPct === "number") return u;
-      // derive a pleasant % range 20–90 based on index
       const pct = 20 + ((i * 29) % 71);
       return { ...u, activityPct: pct };
     });
   }, [users]);
 
-  // Search filter
   const filtered = useMemo(() => {
     if (!query.trim()) return withActivity;
     const q = query.toLowerCase();
@@ -235,7 +157,6 @@ export default function UsersPage() {
     );
   }, [withActivity, query]);
 
-  // Pagination
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const clampedPage = Math.min(page, totalPages);
@@ -243,7 +164,6 @@ export default function UsersPage() {
   const endIdx = Math.min(startIdx + PAGE_SIZE, total);
   const pageItems = filtered.slice(startIdx, endIdx);
 
-  // Role counts
   const roleCounts = useMemo<Record<RoleKey, number>>(() => {
     const counts: Record<RoleKey, number> = {
       admin: 0,
@@ -300,60 +220,66 @@ export default function UsersPage() {
             <h2 className="text-lg font-semibold text-foreground">User List</h2>
           </div>
 
-          <div className="space-y-5">
-            {pageItems.map((user) => (
-              <div key={user._id || user.email} className="flex items-center">
-                {/* Avatar + name */}
-                <div className="flex items-center w-1/3 min-w-[220px] pr-3">
-                  <img
-                    src={user.avatar}
-                    alt={user.username}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div className="ml-3">
-                    <div className="text-sm font-medium text-foreground">
-                      {user.username}
-                    </div>
-                    <div className="text-xs text-foreground/60 capitalize">
-                      {user.role}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Progress */}
-                <div className="flex-1 px-4">
-                  <div className="h-2.5 w-full rounded-full bg-foreground/[0.08]">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ease-out ${roleChip(
-                        user.role
-                      )}`}
-                      style={{
-                        width: `${Math.max(
-                          5,
-                          Math.min(100, user.activityPct ?? 0)
-                        )}%`,
-                      }}
+          {loading && users.length === 0 ? (
+            <UserRowSkeleton count={PAGE_SIZE} />
+          ) : (
+            <div className="space-y-5">
+              {pageItems.map((user) => (
+                <div key={user._id || user.email} className="flex items-center">
+                  {/* Avatar + name */}
+                  <div className="flex items-center w-1/3 min-w-[220px] pr-3">
+                    <img
+                      src={user.avatar}
+                      alt={user.username}
+                      className="w-10 h-10 rounded-full object-cover"
                     />
+                    <div className="ml-3">
+                      <div className="text-sm font-medium text-foreground">
+                        {user.username}
+                      </div>
+                      <div className="text-xs text-foreground/60 capitalize">
+                        {user.role}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Progress */}
+                  <div className="flex-1 px-4">
+                    <div className="h-2.5 w-full rounded-full bg-foreground/[0.08]">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ease-out ${roleChip(
+                          user.role
+                        )}`}
+                        style={{
+                          width: `${Math.max(
+                            5,
+                            Math.min(100, user.activityPct ?? 0)
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Status */}
+                  <div className="w-28 text-right">
+                    <span
+                      className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusBadge(
+                        user.status
+                      )}`}
+                    >
+                      {user.status}
+                    </span>
                   </div>
                 </div>
+              ))}
 
-                {/* Status */}
-                <div className="w-28 text-right">
-                  <span
-                    className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusBadge(
-                      user.status
-                    )}`}
-                  >
-                    {user.status}
-                  </span>
+              {!loading && pageItems.length === 0 && (
+                <div className="text-sm text-foreground/60">
+                  No users found.
                 </div>
-              </div>
-            ))}
-
-            {pageItems.length === 0 && (
-              <div className="text-sm text-foreground/60">No users found.</div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </section>
 
         {/* User Roles card */}
@@ -452,8 +378,6 @@ export default function UsersPage() {
           </button>
         </div>
       </div>
-
-      <CoinFountain />
     </div>
   );
 }
