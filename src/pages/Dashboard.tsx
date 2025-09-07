@@ -441,8 +441,16 @@ export default function Dashboard() {
           className="
     no-chart-focus relative h-80 w-full
     px-4 sm:px-5 pb-6
-    [--stroke:#7c3aed] [--fill1:rgba(124,58,237,0.35)] [--fill2:rgba(124,58,237,0)]
-    dark:[--stroke:#a78bfa] dark:[--fill1:rgba(167,139,250,0.20)] dark:[--fill2:rgba(167,139,250,0)]
+[--stroke:#0ea5e9] [--fill1:rgba(14,165,233,0.30)] [--fill2:rgba(14,165,233,0)]
+dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(56,189,248,0)]
+
+
+
+
+
+
+
+
   "
           tabIndex={-1}
           onMouseDownCapture={(e) => e.preventDefault()} // kills click-to-focus
@@ -453,9 +461,10 @@ export default function Dashboard() {
           }}
         >
           <div
-            className="pointer-events-none absolute inset-0 opacity-[0.32] dark:opacity-[0.24]
-                       bg-[radial-gradient(1200px_300px_at_50%_0%,rgba(124,58,237,0.12),transparent_60%)]"
+            className="pointer-events-none absolute inset-0 opacity-[0.24] dark:opacity-[0.18]
+             bg-[radial-gradient(1200px_300px_at_50%_0%,rgba(14,165,233,0.10),transparent_60%)]"
           />
+
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}

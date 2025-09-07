@@ -82,10 +82,7 @@ function Coin({
       className="absolute bottom-[-48px] will-change-transform animate-coin pointer-events-none"
       style={style}
     >
-      <svg
-        viewBox="0 0 100 100"
-        className="block w-full h-full drop-shadow-[0_6px_12px_rgba(0,0,0,.25)]"
-      >
+      <svg viewBox="0 0 100 100" className="block w-full h-full">
         <defs>
           <linearGradient id="coinGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="var(--coin-edge)" />
@@ -143,13 +140,13 @@ function CoinFountain() {
         duration: number;
       }>;
 
-    const count = 14; // tweak density
+    const count = 6; // tweak density
     return Array.from({ length: count }, (_, i) => ({
       key: i,
       delay: (i * 0.22) % 3.4,
       left: Math.random() * 100,
       size: 22 + Math.random() * 22,
-      rise: 26 + Math.random() * 26,
+      rise: 24 + Math.random() * 26,
       drift: -10 + Math.random() * 20,
       duration: 2.6 + Math.random() * 0.9,
     }));
