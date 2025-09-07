@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, BarChart3 } from "lucide-react";
 
-import architAvatar from "../assets/archit-avatar.png";
-import ramAvatar from "../assets/ram-avatar.png";
-import golloAvatar from "../assets/gollo-avatar.png";
+import user1 from "../assets/user 1.png";
+import user2 from "../assets/user 2.png";
+import user3 from "../assets/user 3.png";
 import { api } from "@/lib/api";
 
 /* ------------------------------- Types -------------------------------- */
@@ -188,13 +188,15 @@ export default function UsersPage() {
         const data: User[] | ApiError = await res.json();
 
         if (res.ok && Array.isArray(data)) {
+          const avatars = [user1, user2, user3];
           setUsers(
             data.map((u: User, i: number) => ({
               ...u,
+              // Use backend avatar only if it's a full URL; otherwise use our bundled images.
               avatar:
-                u.avatar ||
-                [architAvatar, ramAvatar, golloAvatar][i % 3] ||
-                architAvatar,
+                typeof u.avatar === "string" && /^https?:\/\//i.test(u.avatar)
+                  ? u.avatar
+                  : avatars[i % avatars.length],
             }))
           );
         } else {
@@ -259,9 +261,8 @@ export default function UsersPage() {
   /* ------------------------------ Render ------------------------------- */
 
   return (
-    // relative so the footer image can be absolutely positioned without adding height
     <div className="relative px-6 pt-2 min-h-dvh pb-8">
-      {/* Title + Search (pulled up slightly to align with left-rail logo) */}
+      {/* Title + Search */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 -mt-3 sm:-mt-6 mb-6">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-semibold text-foreground">
@@ -290,7 +291,7 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Main grid: Activity (2) + Roles (1) */}
+      {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* User List */}
         <section className="lg:col-span-2 rounded-xl bg-surface border border-elev p-6 card-inset">
