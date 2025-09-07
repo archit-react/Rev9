@@ -206,7 +206,7 @@ export default function UsersPage() {
         }
       } catch (err) {
         console.error("Failed to fetch users:", err);
-      
+      }
     };
     fetchUsers();
   }, []);
@@ -260,8 +260,6 @@ export default function UsersPage() {
   }, [filtered]);
 
   /* ------------------------------ Render ------------------------------- */
-
-  
 
   return (
     // relative so the footer image can be absolutely positioned without adding height
