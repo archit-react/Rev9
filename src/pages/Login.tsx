@@ -335,7 +335,7 @@ export default function Login() {
                 name="email"
                 type="email"
                 inputMode="email"
-                autoComplete="off"
+                autoComplete="email"
                 placeholder="Email address"
                 className={pillInput}
                 value={email}
