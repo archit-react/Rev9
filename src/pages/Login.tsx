@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type SVGProps } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { api } from "@/lib/api";
+import Button from "@/components/ui/button";
 
 /* ---------------- Money Rain (background only) ---------------- */
 function MoneyRain() {
@@ -296,16 +297,6 @@ export default function Login() {
     "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset focus:border-transparent " +
     "caret-blue-500 transition-shadow duration-200";
 
-  const ctaButton =
-    "w-full rounded-full h-12 px-4 mt-6 font-semibold " +
-    "bg-neutral-900 text-white shadow-sm " +
-    "hover:bg-neutral-700 " +
-    "active:bg-neutral-500 active:translate-y-px " +
-    "focus-visible:outline-none focus-visible:ring-2 " +
-    "focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white " +
-    "disabled:bg-neutral-800 disabled:text-white/70 disabled:cursor-not-allowed " +
-    "transition-colors duration-150";
-
   // 👁️ Fixed Eye icons
   function EyeIcon(props: SVGProps<SVGSVGElement>) {
     return (
@@ -339,33 +330,6 @@ export default function Login() {
       >
         <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
         <line x1="1" y1="1" x2="23" y2="23" />
-      </svg>
-    );
-  }
-
-  // Inline spinner (no deps)
-  function Spinner() {
-    return (
-      <svg
-        className="animate-spin h-5 w-5 mr-2"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <circle
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-          fill="none"
-          opacity="0.25"
-        />
-        <path
-          d="M12 2a10 10 0 0 1 10 10"
-          stroke="currentColor"
-          strokeWidth="4"
-          fill="none"
-        />
       </svg>
     );
   }
@@ -479,21 +443,14 @@ export default function Login() {
           </div>
 
           {/* CTA */}
-          <button
+          <Button
             type="submit"
-            disabled={loading}
-            aria-busy={loading}
-            className={`${ctaButton} inline-flex items-center justify-center`}
+            isLoading={loading}
+            loadingText="Signing in…"
+            className="w-full mt-6"
           >
-            {loading ? (
-              <>
-                <Spinner />
-                Signing in…
-              </>
-            ) : (
-              "Continue"
-            )}
-          </button>
+            Continue
+          </Button>
         </form>
 
         {/* Sign up line */}
