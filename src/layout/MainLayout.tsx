@@ -1,6 +1,7 @@
+// src/layout/MainLayout.tsx
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { Home, Users, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import adminAvatar from "../assets/admin.png";
 import { logout as clearAuth } from "@/lib/api";
@@ -65,7 +66,6 @@ function SidebarItem({
           title={label}
           aria-label={label}
         >
-          {/* rail removed */}
           <motion.span
             animate={{ scale: isActive ? 1.05 : 1 }}
             whileHover={{ scale: isActive ? 1.05 : 1.03 }}
@@ -79,6 +79,24 @@ function SidebarItem({
       )}
     </NavLink>
   );
+}
+
+/* ---------------- Avatar menu + confirm modal (local-only) --------------- */
+
+function useOnClickOutside<T extends HTMLElement>(
+  ref: React.RefObject<T | null>, // ✅ accept T | null to match useRef<T>(null)
+  handler: () => void
+) {
+  useEffect(() => {
+    function onDown(e: MouseEvent) {
+      const el = ref.current;
+      if (!el) return;
+      if (el.contains(e.target as Node)) return;
+      handler();
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [ref, handler]);
 }
 
 export default function MainLayout() {
@@ -96,13 +114,30 @@ export default function MainLayout() {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  const handleLogout = () => {
+  // avatar dropdown + confirm modal state
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useOnClickOutside(menuRef, () => setMenuOpen(false));
+
+  const handleLogout = useCallback(() => {
     try {
       clearAuth(); // removes token + user
     } finally {
       navigate("/login", { replace: true });
     }
-  };
+  }, [navigate]);
+
+  // keyboard support for modal
+  useEffect(() => {
+    if (!confirmOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setConfirmOpen(false);
+      if (e.key === "Enter") handleLogout();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [confirmOpen, handleLogout]); // ✅ include handleLogout
 
   return (
     // Root reveals black on overscroll
@@ -135,7 +170,7 @@ export default function MainLayout() {
             </div>
           </div>
 
-          {/* Theme toggle — 3D flip (no border) */}
+          {/* Theme toggle — stays here */}
           <div className="w-12 flex items-center justify-center">
             <button
               onClick={() => setDarkMode((p) => !p)}
@@ -196,39 +231,60 @@ export default function MainLayout() {
                 testId={testId}
               />
             ))}
-
-            {/* Logout */}
-            <motion.button
-              type="button"
-              onClick={handleLogout}
-              className="relative group w-full pl-4 pr-2 flex items-center justify-center py-2.5 rounded-lg
-             text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400
-             transform-gpu will-change-transform
-             transition-transform duration-150 ease-out
-             active:scale-95 active:translate-y-[1px]
-             outline-none"
-              title="Logout"
-              aria-label="Logout"
-              data-testid="nav-logout"
-            >
-              <LogOut className="w-6 h-6" />
-              <span className="sr-only">Logout</span>
-            </motion.button>
+            {/* (Removed old Logout button from here) */}
           </nav>
 
-          {/* Avatar */}
-          <div className="mt-auto w-12 flex items-center justify-center">
-            <img
-              src={adminAvatar}
-              alt="Admin avatar"
-              className="w-9 h-9 rounded-full object-cover"
-            />
+          {/* Avatar + dropdown */}
+          <div className="mt-auto w-12 flex items-center justify-center relative">
+            {/* Avatar button */}
+            <button
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              aria-label="Open user menu"
+              className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/40"
+            >
+              <img
+                src={adminAvatar}
+                alt="Admin avatar"
+                className="w-9 h-9 rounded-full object-cover"
+              />
+            </button>
+
+            {/* Dropdown */}
+            {menuOpen && (
+              <motion.div
+                ref={menuRef}
+                initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                transition={{ duration: 0.12 }}
+                role="menu"
+                aria-orientation="vertical"
+                className="absolute bottom-12 left-1/2 -translate-x-1/2 min-w-[164px]
+                           rounded-xl border border-elev bg-surface shadow-lg p-1.5 z-20"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setConfirmOpen(true);
+                  }}
+                  role="menuitem"
+                  className="w-full inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                             text-foreground hover:bg-muted focus:outline-none"
+                >
+                  <LogOut className="w-4 h-4 text-foreground/70" />
+                  Logout
+                </button>
+              </motion.div>
+            )}
           </div>
         </aside>
 
         {/* === Right column (scrolls only this area) === */}
         <div className="flex-1 flex flex-col md:ml-16">
-          {/* Make only the main column scroll; parent bg is black so overscroll shows black */}
           <main className="flex-1 h-dvh overflow-hidden bg-app">
             <motion.div
               className="w-full px-3 sm:px-4 md:px-6 lg:px-8 pt-3 sm:pt-8 pb-0"
@@ -243,6 +299,53 @@ export default function MainLayout() {
           </main>
         </div>
       </div>
+
+      {/* Confirm Logout Modal */}
+      {confirmOpen && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-black/40 backdrop-blur-[1px] transition-opacity"
+            onClick={() => setConfirmOpen(false)}
+          />
+
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            transition={{ duration: 0.12 }}
+            className="relative z-50 w-[92%] max-w-sm rounded-2xl bg-white dark:bg-[#111213] border border-elev p-5 shadow-xl"
+          >
+            <h2 className="text-base font-semibold text-foreground mb-1">
+              Sign out?
+            </h2>
+            <p className="text-sm text-foreground/70 mb-5">
+              You’ll need to log in again to access the dashboard.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className="px-4 h-10 rounded-full border border-elev text-sm hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                autoFocus
+                className="px-4 h-10 rounded-full bg-red-600 text-white text-sm hover:bg-red-500 active:bg-red-700"
+              >
+                Logout
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
