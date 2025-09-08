@@ -3,6 +3,8 @@ import { useState, type SVGProps } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api"; // keep your existing helper
 import Button from "@/components/ui/button";
+import { Link } from "react-router-dom";
+
 
 // ---- Types & type-guard to avoid `any` --------------------------------
 type ApiErrorShape = { error?: string; message?: string };
@@ -224,9 +226,9 @@ export default function Signup() {
         {/* Already have an account */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-blue-600 hover:underline">
             Log in
-          </a>
+          </Link>
         </p>
       </div>
     </div>

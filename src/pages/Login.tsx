@@ -1,3 +1,4 @@
+// src/pages/Login.tsx
 import { useEffect, useMemo, useRef, useState, type SVGProps } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { api } from "@/lib/api";
@@ -5,7 +6,6 @@ import Button from "@/components/ui/button";
 
 /* ---------------- Money Rain (background only) ---------------- */
 function MoneyRain() {
-  // 1) Always call hooks (don’t return before all hooks are called)
   const prefersReduced = useMemo(
     () =>
       typeof window !== "undefined" &&
@@ -29,10 +29,8 @@ function MoneyRain() {
     });
   }, [prefersReduced]);
 
-  // After all hooks are called, you can early return
   if (prefersReduced) return null;
 
-  // 2) Type the CSS variable instead of using `any`
   type DriftStyle = React.CSSProperties & { ["--drift"]?: string };
 
   return (
@@ -129,7 +127,6 @@ function MoneyRain() {
 
 /* ----------------------------- Login ----------------------------- */
 
-// types + guards (no `any`)
 type ApiErrorShape = { error?: string; message?: string };
 function isApiErrorShape(x: unknown): x is ApiErrorShape {
   return (
@@ -151,22 +148,27 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPasswordStep, setShowPasswordStep] = useState(false);
-  const [reveal, setReveal] = useState(false); // 👁️ toggle
+  const [reveal, setReveal] = useState(false);
   const [entryToast, setEntryToast] = useState<string>("");
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // read `toast` from navigation state once, then clear it from history
+  // one-time: read and clear toast state
   useEffect(() => {
     const state = location.state as { toast?: string } | null;
     if (state?.toast) {
       setEntryToast(state.toast);
-      // clear state so toast doesn't reappear on back/forward
       navigate(".", { replace: true, state: null });
     }
+    // also cleanup any legacy full-user storage
+    try {
+      localStorage.removeItem("user");
+    } catch {
+      /* ignore localStorage cleanup errors */
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once on mount
+  }, []);
 
   // parse ?next=... for post-login redirect
   const nextUrl = useMemo(() => {
@@ -179,7 +181,7 @@ export default function Login() {
     }
   }, [location.search]);
 
-  // track in-flight request so we can safely abort on unmount / re-submit
+  // abort controller for in-flight request
   const controllerRef = useRef<AbortController | null>(null);
   useEffect(() => {
     return () => {
@@ -196,7 +198,6 @@ export default function Login() {
     }
   };
 
-  // simple email check for step advance
   const looksLikeEmail = (v: string) => /\S+@\S+\.\S+/.test(v.trim());
 
   const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -262,15 +263,16 @@ export default function Login() {
 
       const payload = data as LoginSuccessShape;
 
-      // Keep your current behavior: store token + user locally
+      // Minimal localStorage: token only (no full user object)
       if (payload.token) localStorage.setItem("token", payload.token);
-      if (payload.user)
-        localStorage.setItem("user", JSON.stringify(payload.user));
+      // made sure any legacy 'user' entry is gone
+      try {
+        localStorage.removeItem("user");
+      } catch {
+        /* ignored localStorage cleanup errors */
+      }
 
-      // Redirect priority:
-      // 1) ?next=/target (from ProtectedRoute),
-      // 2) your role-based fallback,
-      // 3) default "/"
+      // Redirect priority
       if (nextUrl) {
         navigate(nextUrl, { replace: true });
       } else if (payload.user?.role === "admin") {
@@ -297,7 +299,7 @@ export default function Login() {
     "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset focus:border-transparent " +
     "caret-blue-500 transition-shadow duration-200";
 
-  // 👁️ Fixed Eye icons
+  // Icons
   function EyeIcon(props: SVGProps<SVGSVGElement>) {
     return (
       <svg
@@ -335,7 +337,6 @@ export default function Login() {
   }
 
   return (
-    // Make page relative so the background can absolutely fill it
     <div className="relative bg-white min-h-screen flex items-center justify-center">
       {/* Money rain sits behind everything */}
       <MoneyRain />

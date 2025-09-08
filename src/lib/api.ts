@@ -32,7 +32,7 @@ const join = (base: string, path: string) => {
 export const api = (path: string) => join(API_BASE, path);
 
 /* ------------------------------------------------------------------ */
-/* Optional helpers (non-breaking):                                   */
+/* Auth helpers                                                       */
 /* ------------------------------------------------------------------ */
 
 export function authHeaders(): Record<string, string> {
@@ -49,7 +49,7 @@ type FetchJsonOptions = Omit<RequestInit, "body" | "headers"> & {
 /** Normalize HeadersInit → plain record for safe merging */
 function toHeaderRecord(h?: HeadersInit): Record<string, string> {
   if (!h) return {};
-  if (h instanceof Headers) {
+  if (typeof Headers !== "undefined" && h instanceof Headers) {
     const obj: Record<string, string> = {};
     h.forEach((value, key) => {
       obj[key] = value;
@@ -65,13 +65,11 @@ function toHeaderRecord(h?: HeadersInit): Record<string, string> {
 }
 
 /**
- * A tiny wrapper around fetch that:
+ * fetchJson:
  *  - defaults credentials to "include" (cookies ready)
- *  - adds Authorization: Bearer <token> unless withAuth === false
+ *  - adds Authorization header unless withAuth === false
  *  - JSON.stringifies `options.json` (if provided)
- *  - safely parses JSON on the way back
- *
- * Returns the parsed JSON (or {}) and throws on !response.ok.
+ *  - safely parses JSON and throws on !response.ok
  */
 export async function fetchJson<T = unknown>(
   path: string,
@@ -106,20 +104,26 @@ export async function fetchJson<T = unknown>(
       (data as { error?: string; message?: string })?.error ||
       (data as { message?: string })?.message ||
       `Request failed (${res.status})`;
-    // gentle hook for 401s without forcing navigation here
-    if (res.status === 401 && isBrowser) {
-      // hint for callers/guards
-      // (we intentionally do not redirect here to avoid surprising flows)
-    }
+
+    // 401 hint: caller can decide to redirect or show a toast
     throw new Error(message);
   }
 
   return data as T;
 }
 
-/** Clear local auth (useful when a token is expired/invalid). */
+/** Clear local auth (token only) + legacy cleanup. */
 export function logout() {
   if (!isBrowser) return;
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+  try {
+    localStorage.removeItem("token");
+  } catch {
+    // ignore localStorage errors (e.g., Safari private mode)
+  }
+  try {
+    // legacy key from older builds — keep cleanup for safety
+    localStorage.removeItem("user");
+  } catch {
+    // ignore localStorage errors
+  }
 }

@@ -1,5 +1,5 @@
 // src/components/ProtectedRoute.tsx
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import type { ReactElement, ReactNode } from "react";
 
 interface ProtectedRouteProps {
@@ -17,17 +17,17 @@ function isTokenValid(token: string): boolean {
     const parts = token.split(".");
     if (parts.length !== 3) return false;
 
-    // base64url -> base64
+    // base64url -> base64 (with padding)
     const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const pad = b64.length % 4 ? "=".repeat(4 - (b64.length % 4)) : "";
-    const json = atob(b64 + pad);
+    const json = typeof atob === "function" ? atob(b64 + pad) : "";
     const payload = JSON.parse(json) as JwtPayload;
 
-    if (!payload.exp) return true; // no exp -> treat as valid
+    if (!payload.exp) return true; // no exp = valid
     const now = Math.floor(Date.now() / 1000);
     return payload.exp > now;
   } catch {
-    return false; // malformed/unparseable -> treat as invalid
+    return false;
   }
 }
 
@@ -35,23 +35,23 @@ export default function ProtectedRoute({
   element,
   children,
 }: ProtectedRouteProps) {
+  const location = useLocation();
+
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  // If no token or expired/invalid, clear and redirect to login
   if (!token || !isTokenValid(token)) {
     if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      // preserve the place the user tried to go
-      const next = window.location.pathname + window.location.search;
-      return (
-        <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />
-      );
+      try {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user"); // legacy cleanup
+      } catch {
+        // ignore localStorage errors (e.g., Safari private mode)
+      }
     }
-    return <Navigate to="/login" replace />;
+    const next = `${location.pathname}${location.search || ""}`;
+    return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />;
   }
 
-  // Otherwise render the page (prefer children, fallback to element)
   return <>{children || element}</>;
 }
