@@ -9,6 +9,8 @@ import {
   Activity,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import PageTitle from "@/components/PageTitle";
+
 
 import {
   ResponsiveContainer,
@@ -350,6 +352,9 @@ export default function Dashboard() {
 
   return (
     <>
+      {/* ✅ Dynamic tab title */}
+      <PageTitle title="Dashboard" />
+
       {/* Title + period selector */}
       <div className="flex justify-between items-center mb-6 -mt-5">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -612,7 +617,7 @@ dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(
         text-xs sm:text-sm text-gray-500 dark:text-gray-400
       "
           >
-            <p>© 2025 Revenue Dashboard</p>
+            <p>© 2025 Rev9</p>
             <div className="flex items-center gap-4 sm:ml-auto">
               <a
                 href="https://www.linkedin.com/in/archit-react/"

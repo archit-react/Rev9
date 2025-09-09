@@ -5,6 +5,7 @@ import user1 from "../assets/user 1.png";
 import user2 from "../assets/user 2.png";
 import user3 from "../assets/user 3.png";
 import { api } from "@/lib/api";
+import PageTitle from "@/components/PageTitle";
 
 /* ------------------------------- Types -------------------------------- */
 
@@ -182,6 +183,9 @@ export default function UsersPage() {
 
   return (
     <div className="relative px-6 pt-2 min-h-dvh pb-8">
+      {/* Dynamic tab title */}
+      <PageTitle title="Users" />
+
       {/* Title + Search */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 -mt-3 sm:-mt-6 mb-6">
         <div className="flex items-center gap-2">
