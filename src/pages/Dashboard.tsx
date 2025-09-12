@@ -194,8 +194,10 @@ const RD = {
   listShiftY: -80, // px; negative = move the list UP, positive = DOWN
 } as const;
 
-/** Brand-aligned colors (light/dark both look great) */
-const SLICE_COLORS = ["#0ea5e9", "#7c3aed", "#22c55e", "#f59e0b"];
+// Microsoft brand colors
+// UPI (Blue), Card (Orange-Red), Wallet (Green), NetBanking (Yellow)
+const SLICE_COLORS = ["#00A4EF", "#F25022", "#7FBA00", "#FFB900"];
+
 
 /** Currency formatter */
 const fmtMoney = (n: number) =>
