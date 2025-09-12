@@ -183,6 +183,17 @@ type PieTooltipPayload = {
   payload: SliceDatum;
 };
 
+// --- Revenue Distribution layout knobs (edit these values anytime) ---
+const RD = {
+  cardRightPad: 64, // px padding on the right side of the card
+  gridGap: 24, // px gap between donut and the list
+  donutHeight: 420, // px height of the donut area
+  donutInner: "58%", // inner radius of donut ring
+  donutOuter: "88%", // outer radius of donut ring
+  listShiftX: -1, // px; negative = move the list LEFT, positive = RIGHT
+  listShiftY: -80, // px; negative = move the list UP, positive = DOWN
+} as const;
+
 /** Brand-aligned colors (light/dark both look great) */
 const SLICE_COLORS = ["#0ea5e9", "#7c3aed", "#22c55e", "#f59e0b"];
 
@@ -633,14 +644,8 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
       </div>
-
       {/* Revenue Distribution (Donut) */}
-      <div
-        className="
-      my-8 rounded-2xl bg-surface border border-elev card-inset
-      overflow-hidden
-    "
-      >
+      <div className="my-8 rounded-2xl bg-surface border border-elev card-inset overflow-hidden">
         <div className="px-6 pt-5 pb-2">
           <p className="text-base font-medium text-foreground/70">
             Revenue Distribution
@@ -653,18 +658,27 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="px-4 sm:px-6 pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        {/* NOTE: paddingRight pushes the right column (list) away from the card edge */}
+        <div
+          className="px-4 sm:px-6 pb-6"
+          style={{ paddingRight: RD.cardRightPad }}
+        >
+          {/* NOTE: columnGap controls the space between donut and list */}
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 items-center"
+            style={{ columnGap: RD.gridGap }}
+          >
             {/* Donut */}
-            <div className="h-[320px] [--donut-stroke:#fff] dark:[--donut-stroke:#0b1220]">
+            <div
+              className="[--donut-stroke:#fff] dark:[--donut-stroke:#0b1220]"
+              style={{ height: RD.donutHeight }}
+            >
               <ResponsiveContainer width="100%" height="100%">
                 {(() => {
                   const { data } = buildRevenueBreakdown(activeTab);
-
                   return (
                     <PieChart>
                       <defs>
-                        {/* soft inner glow */}
                         <filter id="innerShadow">
                           <feGaussianBlur
                             in="SourceAlpha"
@@ -675,16 +689,17 @@ export default function Dashboard() {
                           <feComposite in2="blur" operator="atop" />
                         </filter>
                       </defs>
+
                       <Pie
                         data={data}
                         dataKey="value"
                         nameKey="name"
                         cx="50%"
                         cy="50%"
-                        innerRadius="55%"
-                        outerRadius="85%"
+                        innerRadius={RD.donutInner}
+                        outerRadius={RD.donutOuter}
                         startAngle={90}
-                        endAngle={-270} // clockwise
+                        endAngle={-270}
                         paddingAngle={2}
                         cornerRadius={8}
                         stroke="var(--donut-stroke)"
@@ -724,16 +739,21 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
 
-            {/* Breakdown list */}
-            <div className="space-y-3">
+            {/* Breakdown list (UPI/Card/Wallet/NetBanking) */}
+            <div
+              className="space-y-3 self-center"
+              // marginLeft moves LEFT/RIGHT; marginTop moves UP/DOWN
+              style={{ marginLeft: RD.listShiftX, marginTop: RD.listShiftY }}
+            >
               {(() => {
                 const { data } = buildRevenueBreakdown(activeTab);
                 return data.map((d, i) => (
                   <div
                     key={d.name}
-                    className="flex items-center justify-between"
+                    className="flex items-center justify-between gap-2"
                   >
-                    <div className="flex items-center gap-3">
+                    {/* Left: dot + label */}
+                    <div className="flex items-center gap-3 min-w-[110px]">
                       <span
                         className="inline-block w-3.5 h-3.5 rounded-full"
                         style={{
@@ -745,8 +765,24 @@ export default function Dashboard() {
                         {d.name}
                       </span>
                     </div>
-                    <div className="text-sm text-foreground/70">
-                      {fmtMoney(d.value)} · {(d.pct * 100).toFixed(0)}%
+
+                    {/* Middle: horizontal progress bar */}
+                    <div className="flex items-center gap-2 flex-1 max-w-[360px]">
+                      <div className="w-full bg-gray-200/70 dark:bg-gray-700/40 rounded-full h-[10px]">
+                        <div
+                          className="h-[10px] rounded-full"
+                          style={{
+                            width: `${Math.round(d.pct * 100)}%`,
+                            backgroundColor:
+                              SLICE_COLORS[i % SLICE_COLORS.length],
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Right: value + percent */}
+                    <div className="text-sm text-foreground/70 w-[110px] -ml-1 text-right shrink-0 tabular-nums">
+                      {fmtMoney(d.value)} · {Math.round(d.pct * 100)}%
                     </div>
                   </div>
                 ));
