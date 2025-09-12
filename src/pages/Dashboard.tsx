@@ -11,7 +11,6 @@ import {
 import { motion } from "framer-motion";
 import PageTitle from "@/components/PageTitle";
 
-
 import {
   ResponsiveContainer,
   AreaChart,
@@ -19,7 +18,16 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
 } from "recharts";
+
+import type {
+  Props as LegendProps,
+  LegendPayload as RechartsLegendPayload,
+} from "recharts/types/component/DefaultLegendContent";
 
 import UserModal from "@/components/UserModal";
 import Toast from "@/components/ui/Toast";
@@ -44,9 +52,9 @@ function PeriodToggle({
       role="tablist"
       aria-label="Select period"
       className="
-    inline-flex items-center gap-1 rounded-full p-1
-    bg-surface border border-elev card-inset
-  "
+      inline-flex items-center gap-1 rounded-full p-1
+      bg-surface border border-elev card-inset
+    "
       style={{ transformOrigin: "center" }}
       onPointerDownCapture={() => setPressed(true)}
       onPointerUpCapture={() => setPressed(false)}
@@ -142,6 +150,92 @@ const COMPARE_LABEL: Record<Period, string> = {
   Today: "vs yesterday",
   "This Week": "vs last week",
   "This Month": "vs last month",
+};
+/* ---------------------- Revenue distribution (by method) ---------------------- */
+/** % splits per period — tweak anytime; values must sum ≈ 1.0 */
+const METHOD_PCT: Record<Period, Array<{ name: string; pct: number }>> = {
+  Today: [
+    { name: "UPI", pct: 0.4 },
+    { name: "Card", pct: 0.34 },
+    { name: "Wallet", pct: 0.17 },
+    { name: "NetBanking", pct: 0.09 },
+  ],
+  "This Week": [
+    { name: "UPI", pct: 0.42 },
+    { name: "Card", pct: 0.33 },
+    { name: "Wallet", pct: 0.16 },
+    { name: "NetBanking", pct: 0.09 },
+  ],
+  "This Month": [
+    { name: "UPI", pct: 0.41 },
+    { name: "Card", pct: 0.34 },
+    { name: "Wallet", pct: 0.15 },
+    { name: "NetBanking", pct: 0.1 },
+  ],
+};
+
+// ---- types for pie/donut (no "any") ----
+type SliceDatum = { name: string; value: number; pct: number };
+
+type PieTooltipPayload = {
+  name: string;
+  value: number;
+  payload: SliceDatum;
+};
+
+/** Brand-aligned colors (light/dark both look great) */
+const SLICE_COLORS = ["#0ea5e9", "#7c3aed", "#22c55e", "#f59e0b"];
+
+/** Currency formatter */
+const fmtMoney = (n: number) =>
+  `$${Math.round(n).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+/** Build data from CURRENT revenue + METHOD_PCT, adjust last slice to fix rounding drift */
+const buildRevenueBreakdown = (period: Period) => {
+  const total = CURRENT[period].revenue;
+  const pct = METHOD_PCT[period];
+  const data = pct.map((p, i) => ({
+    name: p.name,
+    value: i < pct.length - 1 ? Math.round(total * p.pct) : 0, // last fixed below
+    pct: p.pct,
+  }));
+  const assigned = data.slice(0, -1).reduce((s, d) => s + d.value, 0);
+  data[data.length - 1].value = Math.max(total - assigned, 0); // exact sum
+  return { total, data };
+};
+
+/** Donut tooltip */
+/** Donut tooltip (typed, no "any") */
+const DonutTooltip: React.FC<{
+  active?: boolean;
+  payload?: PieTooltipPayload[];
+}> = ({ active, payload }) => {
+  if (!active || !payload || !payload.length) return null;
+  const p = payload[0];
+  const pct = `${(p.payload.pct * 100).toFixed(0)}%`;
+  return (
+    <div className="rounded-lg border border-elev bg-surface px-3 py-2 text-sm shadow-fresh">
+      <div className="font-medium text-foreground">{p.name}</div>
+      <div className="text-foreground/70">
+        {fmtMoney(p.value)} • {pct}
+      </div>
+    </div>
+  );
+};
+
+// Legend formatter that matches Recharts' expected types
+const legendFormatter: LegendProps["formatter"] = (
+  value,
+  entry: RechartsLegendPayload
+) => {
+  // entry.payload can be undefined in the type, so guard it
+  const d = entry.payload as SliceDatum | undefined;
+  const percent = d ? `${(d.pct * 100).toFixed(0)}%` : "";
+  return (
+    <span className="text-sm text-foreground/80">
+      {String(value)} {percent ? `— ${percent}` : ""}
+    </span>
+  );
 };
 
 /* ------------------------------ Component ----------------------------- */
@@ -352,7 +446,7 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* ✅ Dynamic tab title */}
+      {/* Dynamic tab title */}
       <PageTitle title="Dashboard" />
 
       {/* Title + period selector */}
@@ -384,9 +478,9 @@ export default function Dashboard() {
           <div
             key={i}
             className="
-  relative rounded-2xl p-5
-  bg-surface border border-elev card-inset
-"
+    relative rounded-2xl p-5
+    bg-surface border border-elev card-inset
+  "
           >
             <p className="text-sm font-medium text-foreground/70 mb-1">
               {card.label}
@@ -413,10 +507,10 @@ export default function Dashboard() {
       {/* Revenue Trend */}
       <div
         className="
-  relative mt-8 rounded-2xl
-  bg-surface border border-elev card-inset
-  overflow-hidden
-"
+    relative mt-8 rounded-2xl
+    bg-surface border border-elev card-inset
+    overflow-hidden
+  "
       >
         <div className="px-6 pt-5 pb-2">
           <p className="text-base font-medium text-foreground/70">
@@ -444,10 +538,10 @@ export default function Dashboard() {
         {/* Chart area */}
         <div
           className="
-    no-chart-focus relative h-80 w-full
-    px-4 sm:px-5 pb-6
-[--stroke:#0ea5e9] [--fill1:rgba(14,165,233,0.30)] [--fill2:rgba(14,165,233,0)]
-dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(56,189,248,0)]
+      no-chart-focus relative h-80 w-full
+      px-4 sm:px-5 pb-6
+  [--stroke:#0ea5e9] [--fill1:rgba(14,165,233,0.30)] [--fill2:rgba(14,165,233,0)]
+  dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(56,189,248,0)]
 
 
 
@@ -456,7 +550,7 @@ dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(
 
 
 
-  "
+    "
           tabIndex={-1}
           onMouseDownCapture={(e) => e.preventDefault()} // kills click-to-focus
           onFocusCapture={(e) => {
@@ -467,7 +561,7 @@ dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(
         >
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.24] dark:opacity-[0.18]
-             bg-[radial-gradient(1200px_300px_at_50%_0%,rgba(14,165,233,0.10),transparent_60%)]"
+              bg-[radial-gradient(1200px_300px_at_50%_0%,rgba(14,165,233,0.10),transparent_60%)]"
           />
 
           <ResponsiveContainer width="100%" height="100%">
@@ -540,10 +634,132 @@ dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(
         </div>
       </div>
 
+      {/* Revenue Distribution (Donut) */}
+      <div
+        className="
+      my-8 rounded-2xl bg-surface border border-elev card-inset
+      overflow-hidden
+    "
+      >
+        <div className="px-6 pt-5 pb-2">
+          <p className="text-base font-medium text-foreground/70">
+            Revenue Distribution
+          </p>
+          <div className="flex items-center gap-2">
+            <p className="text-3xl font-bold text-foreground">
+              {fmtMoney(CURRENT[activeTab].revenue)}
+            </p>
+            <p className="text-sm text-foreground/60">by Payment Method</p>
+          </div>
+        </div>
+
+        <div className="px-4 sm:px-6 pb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            {/* Donut */}
+            <div className="h-[320px] [--donut-stroke:#fff] dark:[--donut-stroke:#0b1220]">
+              <ResponsiveContainer width="100%" height="100%">
+                {(() => {
+                  const { data } = buildRevenueBreakdown(activeTab);
+
+                  return (
+                    <PieChart>
+                      <defs>
+                        {/* soft inner glow */}
+                        <filter id="innerShadow">
+                          <feGaussianBlur
+                            in="SourceAlpha"
+                            stdDeviation="3"
+                            result="blur"
+                          />
+                          <feOffset dy="2" />
+                          <feComposite in2="blur" operator="atop" />
+                        </filter>
+                      </defs>
+                      <Pie
+                        data={data}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius="55%"
+                        outerRadius="85%"
+                        startAngle={90}
+                        endAngle={-270} // clockwise
+                        paddingAngle={2}
+                        cornerRadius={8}
+                        stroke="var(--donut-stroke)"
+                        strokeWidth={2}
+                      >
+                        {data.map((entry, i) => (
+                          <Cell
+                            key={entry.name}
+                            fill={SLICE_COLORS[i % SLICE_COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+
+                      {/* Center label */}
+                      <foreignObject x="35%" y="33%" width="30%" height="24%">
+                        <div className="w-full h-full flex flex-col items-center justify-center">
+                          <div className="text-xl font-semibold text-foreground">
+                            100%
+                          </div>
+                          <div className="text-xs text-foreground/60 -mt-0.5">
+                            Total
+                          </div>
+                        </div>
+                      </foreignObject>
+
+                      <Tooltip content={<DonutTooltip />} />
+                      <Legend
+                        verticalAlign="bottom"
+                        align="center"
+                        iconType="circle"
+                        formatter={legendFormatter}
+                        wrapperStyle={{ paddingTop: 8 }}
+                      />
+                    </PieChart>
+                  );
+                })()}
+              </ResponsiveContainer>
+            </div>
+
+            {/* Breakdown list */}
+            <div className="space-y-3">
+              {(() => {
+                const { data } = buildRevenueBreakdown(activeTab);
+                return data.map((d, i) => (
+                  <div
+                    key={d.name}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="inline-block w-3.5 h-3.5 rounded-full"
+                        style={{
+                          backgroundColor:
+                            SLICE_COLORS[i % SLICE_COLORS.length],
+                        }}
+                      />
+                      <span className="text-sm font-medium text-foreground">
+                        {d.name}
+                      </span>
+                    </div>
+                    <div className="text-sm text-foreground/70">
+                      {fmtMoney(d.value)} · {(d.pct * 100).toFixed(0)}%
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Analytical Overview (static, no motion) */}
       <Card
         className="mt-8 p-6 rounded-2xl bg-surface border border-elev
-    !transform-none !transition-none"
+      !transform-none !transition-none"
       >
         <h3 className="text-xl font-semibold text-foreground mb-4">
           Analytical Overview
@@ -610,12 +826,12 @@ dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(
         <div className="pt-3 pb-3">
           <div
             className="
-        w-full max-w-9xl mx-auto
-        px-3 sm:px-3
-        flex flex-col sm:flex-row
-        items-center gap-2
-        text-xs sm:text-sm text-gray-500 dark:text-gray-400
-      "
+          w-full max-w-9xl mx-auto
+          px-3 sm:px-3
+          flex flex-col sm:flex-row
+          items-center gap-2
+          text-xs sm:text-sm text-gray-500 dark:text-gray-400
+        "
           >
             <p>© 2025 Rev9</p>
             <div className="flex items-center gap-4 sm:ml-auto">
