@@ -6,20 +6,6 @@ import { motion } from "framer-motion";
 import adminAvatar from "../assets/admin.png";
 import { logout as clearAuth } from "@/lib/api";
 
-/** Clean solid crescent moon (no halo) */
-function SolidMoon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={className}
-      fill="currentColor"
-    >
-      <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
-    </svg>
-  );
-}
-
 type NavItem = {
   to: string;
   label: string;
@@ -84,7 +70,7 @@ function SidebarItem({
 /* ---------------- Avatar menu + confirm modal (local-only) --------------- */
 
 function useOnClickOutside<T extends HTMLElement>(
-  ref: React.RefObject<T | null>, // ✅ accept T | null to match useRef<T>(null)
+  ref: React.RefObject<T | null>,
   handler: () => void
 ) {
   useEffect(() => {
@@ -100,19 +86,7 @@ function useOnClickOutside<T extends HTMLElement>(
 }
 
 export default function MainLayout() {
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem("theme");
-    return saved
-      ? saved === "dark"
-      : window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
 
   // avatar dropdown + confirm modal state
   const [menuOpen, setMenuOpen] = useState(false);
@@ -137,7 +111,7 @@ export default function MainLayout() {
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [confirmOpen, handleLogout]); // ✅ include handleLogout
+  }, [confirmOpen, handleLogout]);
 
   return (
     // Root reveals black on overscroll
@@ -150,78 +124,9 @@ export default function MainLayout() {
                      dark:border-transparent dark:shadow-none transition-shadow"
           aria-label="Primary"
         >
-          {/* Logo */}
-          <div className="w-12 flex items-center justify-center">
-            <div className="relative w-9 h-9 text-[#7c3aed] -translate-y-[1px]">
-              <svg
-                className="absolute inset-0"
-                fill="none"
-                viewBox="0 0 48 48"
-                aria-hidden
-              >
-                <path
-                  d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"
-                  fill="currentColor"
-                />
-              </svg>
-              <span className="absolute inset-0 flex items-center justify-center text-white text-[21px] font-extrabold leading-none select-none -translate-y-[0.5px]">
-                $
-              </span>
-            </div>
-          </div>
-
-          {/* Theme toggle — stays here */}
-          <div className="w-12 flex items-center justify-center">
-            <button
-              onClick={() => setDarkMode((p) => !p)}
-              aria-label={
-                darkMode ? "Switch to light mode" : "Switch to dark mode"
-              }
-              className="
-                relative p-2 rounded-full
-                text-black dark:text-white
-                hover:text-amber-500 dark:hover:text-amber-300
-                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40
-                transition-colors duration-200
-              "
-            >
-              <div className="relative" style={{ perspective: 700 }}>
-                <motion.div
-                  initial={false}
-                  animate={{ rotateX: darkMode ? 180 : 0 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 700,
-                    damping: 35,
-                    mass: 0.6,
-                  }}
-                  className="transform-gpu relative w-6 h-6"
-                  style={{ transformStyle: "preserve-3d" }}
-                >
-                  <span
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{ backfaceVisibility: "hidden" }}
-                  >
-                    <SolidMoon className="w-6 h-6 translate-y-[-2px]" />
-                  </span>
-                  <span
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{
-                      transform: "rotateX(180deg)",
-                      backfaceVisibility: "hidden",
-                    }}
-                  >
-                    <span className="material-icons text-[22px] leading-none select-none">
-                      light_mode
-                    </span>
-                  </span>
-                </motion.div>
-              </div>
-            </button>
-          </div>
-
-          {/* Nav */}
-          <nav className="flex flex-col gap-y-1.5 -mt-2 -ml-1.5">
+         
+          {/* Nav (moves up automatically now) */}
+          <nav className="flex flex-col gap-y-1.5 mt-0.5 -ml-1.5">
             {NAV_LINKS.map(({ to, label, icon, testId }) => (
               <SidebarItem
                 key={to}
@@ -231,7 +136,6 @@ export default function MainLayout() {
                 testId={testId}
               />
             ))}
-            {/* (Removed old Logout button from here) */}
           </nav>
 
           {/* Avatar + dropdown */}

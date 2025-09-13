@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "@fontsource-variable/plus-jakarta-sans";
 import {
   Linkedin,
   Github,
@@ -7,9 +8,13 @@ import {
   UserPlus,
   LineChart,
   Activity,
+  Download,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import PageTitle from "@/components/PageTitle";
+import ThemeToggle from "@/components/ThemeToggle";
+
+
 
 import {
   ResponsiveContainer,
@@ -198,6 +203,86 @@ const RD = {
 // UPI (Blue), Card (Orange-Red), Wallet (Green), NetBanking (Yellow)
 const SLICE_COLORS = ["#00A4EF", "#F25022", "#7FBA00", "#FFB900"];
 
+/* ------------------------------ Export helpers ------------------------------ */
+
+function csvEscape(v: unknown) {
+  const s = String(v ?? "");
+  // Escape quotes and wrap if needed
+  const needsWrap = /[",\n]/.test(s);
+  const esc = s.replace(/"/g, '""');
+  return needsWrap ? `"${esc}"` : esc;
+}
+
+function toCsv(rows: Array<Array<unknown>>) {
+  const lines = rows.map((r) => r.map(csvEscape).join(","));
+  // BOM helps Excel open UTF-8 correctly
+  return "\uFEFF" + lines.join("\n");
+}
+
+function downloadTextFile(filename: string, mime: string, text: string) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/** Build a CSV string for the current dashboard state */
+function buildRevenueReportCSV(args: {
+  period: Period;
+  users: number;
+  revenue: number;
+  conv: number;
+  sales: number;
+  engagement: number;
+  bounce: number;
+  chartData: Array<{ month: string; revenue: number }>;
+}) {
+  const { period, users, revenue, conv, sales, engagement, bounce, chartData } =
+    args;
+
+  const { data: breakdown } = (() => {
+    // re-use existing function + constants
+    return { data: buildRevenueBreakdown(period).data };
+  })();
+
+  const rows: Array<Array<unknown>> = [];
+
+  // Header
+  rows.push(["Report", "Rev9 Dashboard"]);
+  rows.push(["Generated At", new Date().toISOString()]);
+  rows.push(["Selected Period", period]);
+  rows.push([]);
+
+  // Current metrics
+  rows.push(["Metric", "Value"]);
+  rows.push(["Users", users]);
+  rows.push(["Revenue", revenue]);
+  rows.push(["Conversion (%)", conv]);
+  rows.push(["Sales", sales]);
+  rows.push(["Engagement (%)", engagement]);
+  rows.push(["Bounce Rate (%)", bounce]);
+  rows.push([]);
+
+  // Revenue distribution
+  rows.push(["Revenue Distribution", "Value", "Percent"]);
+  breakdown.forEach((d) => {
+    rows.push([d.name, d.value, Math.round(d.pct * 100)]);
+  });
+  rows.push([]);
+
+  // Trend (last 6 months)
+  rows.push(["Month", "Revenue"]);
+  chartData.forEach((m) => rows.push([m.month, m.revenue]));
+
+  return toCsv(rows);
+}
+
+
 
 /** Currency formatter */
 const fmtMoney = (n: number) =>
@@ -250,6 +335,30 @@ const legendFormatter: LegendProps["formatter"] = (
     </span>
   );
 };
+
+/** Brand logo used in the old sidebar */
+function BrandMark() {
+  return (
+    <div className="relative w-8 h-8 sm:w-9 sm:h-9 text-[#7c3aed] -translate-y-[1px]">
+      <svg
+        className="absolute inset-0"
+        fill="none"
+        viewBox="0 0 48 48"
+        aria-hidden
+      >
+        <path
+          d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"
+          fill="currentColor"
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-white text-[19px] sm:text-[21px] font-extrabold leading-none select-none -translate-y-[0.5px]">
+        $
+      </span>
+    </div>
+  );
+}
+
+
 
 /* ------------------------------ Component ----------------------------- */
 
@@ -455,6 +564,26 @@ export default function Dashboard() {
     setEditingUser(null);
   };
 
+  // Export button handler
+  const handleExport = () => {
+    const csv = buildRevenueReportCSV({
+      period: activeTab,
+      users: CURRENT[activeTab].users,
+      revenue: CURRENT[activeTab].revenue,
+      conv: CURRENT[activeTab].conv,
+      sales: CURRENT[activeTab].sales,
+      engagement: CURRENT[activeTab].engagement,
+      bounce: CURRENT[activeTab].bounce,
+      chartData, // uses your existing constant
+    });
+
+    downloadTextFile(
+      `rev9-report-${activeTab.replace(/\s+/g, "-").toLowerCase()}.csv`,
+      "text/csv;charset=utf-8",
+      csv
+    );
+  };
+
   /* -------------------------------- Render ------------------------------- */
 
   return (
@@ -463,11 +592,42 @@ export default function Dashboard() {
       <PageTitle title="Dashboard" />
 
       {/* Title + period selector */}
-      <div className="flex justify-between items-center mb-6 -mt-5">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Dashboard
-        </h1>
-        <PeriodToggle value={activeTab} onChange={(p) => setActiveTab(p)} />
+      <div className="flex justify-between items-center mb-6 -mt-3">
+        <div className="flex items-center gap-3">
+          <BrandMark />
+          <h1 className="font-['General Sans'] text-[28px] sm:text-[30px] md:text-[32px] font-semibold tracking-tight text-gray-900 dark:text-white">
+            Rev9
+          </h1>
+        </div>
+
+        {/* Right side: export + pills + theme toggle */}
+        {/* Right side: pills • export icon • theme */}
+        <div className="flex items-center gap-2">
+          {/* period pills */}
+          <PeriodToggle value={activeTab} onChange={(p) => setActiveTab(p)} />
+
+          {/* minimal export button — flat, subtle */}
+          <button
+            type="button"
+            onClick={handleExport}
+            className="
+    inline-flex items-center gap-1.5
+    px-3 py-1.5
+    rounded-md text-base font-medium
+    text-gray-600 hover:text-gray-900
+    dark:text-gray-300 dark:hover:text-white
+    transition-colors
+    focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/30
+  "
+            aria-label="Export revenue report as CSV"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export</span>
+          </button>
+
+          {/* theme toggle at far right */}
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Metrics (global tokens) */}
@@ -672,8 +832,15 @@ export default function Dashboard() {
           >
             {/* Donut */}
             <div
-              className="[--donut-stroke:#fff] dark:[--donut-stroke:#0b1220]"
+              className="[--donut-stroke:#fff] dark:[--donut-stroke:#0b1220] no-chart-focus"
               style={{ height: RD.donutHeight }}
+              tabIndex={-1}
+              onMouseDownCapture={(e) => e.preventDefault()} // blocks click-to-focus
+              onFocusCapture={(e) => {
+                // if anything gets focus, blur it
+                const el = e.target as HTMLElement;
+                el?.blur?.();
+              }}
             >
               <ResponsiveContainer width="100%" height="100%">
                 {(() => {
@@ -716,16 +883,6 @@ export default function Dashboard() {
                       </Pie>
 
                       {/* Center label */}
-                      <foreignObject x="35%" y="33%" width="30%" height="24%">
-                        <div className="w-full h-full flex flex-col items-center justify-center">
-                          <div className="text-xl font-semibold text-foreground">
-                            100%
-                          </div>
-                          <div className="text-xs text-foreground/60 -mt-0.5">
-                            Total
-                          </div>
-                        </div>
-                      </foreignObject>
 
                       <Tooltip content={<DonutTooltip />} />
                       <Legend
@@ -743,7 +900,7 @@ export default function Dashboard() {
 
             {/* Breakdown list (UPI/Card/Wallet/NetBanking) */}
             <div
-              className="space-y-3 self-center"
+              className="space-y-6 self-center"
               // marginLeft moves LEFT/RIGHT; marginTop moves UP/DOWN
               style={{ marginLeft: RD.listShiftX, marginTop: RD.listShiftY }}
             >
@@ -796,8 +953,8 @@ export default function Dashboard() {
 
       {/* Analytical Overview (static, no motion) */}
       <Card
-        className="mt-8 p-6 rounded-2xl bg-surface border border-elev
-      !transform-none !transition-none"
+        className="mt-8 p-10 pb-16 rounded-2xl bg-surface border border-elev
+  !transform-none !transition-none"
       >
         <h3 className="text-xl font-semibold text-foreground mb-4">
           Analytical Overview
