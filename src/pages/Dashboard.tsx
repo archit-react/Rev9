@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "@fontsource-variable/plus-jakarta-sans";
 import {
   Linkedin,
   Github,
@@ -13,8 +12,6 @@ import {
 import { motion } from "framer-motion";
 import PageTitle from "@/components/PageTitle";
 import ThemeToggle from "@/components/ThemeToggle";
-
-
 
 import {
   ResponsiveContainer,
@@ -282,8 +279,6 @@ function buildRevenueReportCSV(args: {
   return toCsv(rows);
 }
 
-
-
 /** Currency formatter */
 const fmtMoney = (n: number) =>
   `$${Math.round(n).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
@@ -357,8 +352,6 @@ function BrandMark() {
     </div>
   );
 }
-
-
 
 /* ------------------------------ Component ----------------------------- */
 
