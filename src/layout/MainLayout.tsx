@@ -126,7 +126,7 @@ export default function MainLayout() {
         >
          
           {/* Nav (moves up automatically now) */}
-          <nav className="flex flex-col gap-y-1.5 mt-0.5 -ml-1.5">
+          <nav className="flex flex-col gap-y-2.5 mt-1.5 -ml-1.5">
             {NAV_LINKS.map(({ to, label, icon, testId }) => (
               <SidebarItem
                 key={to}

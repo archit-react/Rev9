@@ -355,9 +355,9 @@ export default function Login() {
         {/* Heading */}
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-2 antialiased tracking-tight leading-tight">
-            Log in or sign up
+            Rev9
           </h1>
-          <p className="text-gray-600 mb-8">Sign in to Dashboard.</p>
+          <p className="text-gray-600 mb-8">Log in or Sign up.</p>
         </div>
 
         {/* Error */}
