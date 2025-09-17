@@ -20,7 +20,7 @@ describe("MainLayout", () => {
 
     // Initially should be in light mode (moon icon)
     expect(screen.getByTestId("moon-icon")).toBeInTheDocument();
-    expect(localStorage.getItem("theme")).toBe("light"); // ✅ Updated line
+    expect(localStorage.getItem("theme")).toBe("light"); 
 
     // Enable dark mode
     fireEvent.click(toggleButton);
