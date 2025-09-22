@@ -1,4 +1,3 @@
-// src/pages/dashboard/dashboard.tsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -158,21 +157,31 @@ export default function Dashboard() {
         avatarSrc={adminAvatar}
       />
 
-      <MetricsGrid
-        users={count}
-        revenue={revenue}
-        conversion={conversion}
-        sales={sales}
-        engagement={engagement}
-        bounceRate={bounceRate}
-        usersDeltaText={usersDeltaText}
-        revenueDeltaText={revenueDeltaText}
-      />
+      {/* Tight main area: less bottom padding to pull content closer to the footer */}
+      <main className="px-6 pb-2">
+        <div className="space-y-6">
+          <MetricsGrid
+            users={count}
+            revenue={revenue}
+            conversion={conversion}
+            sales={sales}
+            engagement={engagement}
+            bounceRate={bounceRate}
+            usersDeltaText={usersDeltaText}
+            revenueDeltaText={revenueDeltaText}
+          />
 
-      <RevenueTrend />
-      <RevenueDistribution period={activeTab} />
-      <AnalyticalOverview />
+          <RevenueTrend />
+          <RevenueDistribution period={activeTab} />
 
+          {/* Last block: explicitly no bottom margin so footer hugs closely */}
+          <div className="mb-0">
+            <AnalyticalOverview />
+          </div>
+        </div>
+      </main>
+
+      {/* Footer unchanged */}
       <FooterBar />
 
       {/* Modals */}

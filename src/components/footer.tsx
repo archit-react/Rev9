@@ -1,4 +1,4 @@
-// src/components/FooterBar.tsx
+// src/components/footer.tsx
 import { Linkedin, Github, Link as LinkIcon } from "lucide-react";
 
 export default function FooterBar() {

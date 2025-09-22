@@ -1,4 +1,3 @@
-// src/components/header/HeaderActions.tsx
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -8,7 +7,14 @@ import { LogOut } from "lucide-react";
 type Props = {
   avatarSrc: string;
   onRequestLogout: () => void;
-  onExport?: () => void; // new prop
+  onExport?: () => void;
+  /** Rename “Home” text (e.g., to “Dashboard” on Users page) */
+  homeLabel?: string;
+  /** Hide the Users link */
+  hideUsers?: boolean;
+  /** Hide the Home link (use on the dashboard) */
+  hideHome?: boolean;
+  className?: string;
 };
 
 function useOnClickOutside<T extends HTMLElement>(
@@ -70,6 +76,10 @@ export default function HeaderActions({
   avatarSrc,
   onRequestLogout,
   onExport,
+  homeLabel = "Home",
+  hideUsers = false,
+  hideHome = false,
+  className = "",
 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -81,29 +91,43 @@ export default function HeaderActions({
     "text-gray-900 dark:text-cyan-300 dark:hover:text-cyan-200 transition";
 
   return (
-    <div className="flex items-center gap-2 sm:gap-4 pointer-events-auto">
-      <AnchorLink to="/" className={linkCls}>
-        Home
-      </AnchorLink>
-      <Divider />
-      <AnchorLink to="/users" className={linkCls}>
-        Users
-      </AnchorLink>
-
-      {/* New Export link */}
-      {onExport && (
+    <div
+      className={`flex items-center gap-2 sm:gap-4 pointer-events-auto ${className}`}
+    >
+      {/* Home (conditionally rendered) */}
+      {!hideHome && (
         <>
-          <Divider />
-          <button type="button" onClick={onExport} className={linkCls}>
-            Export
-          </button>
+          <AnchorLink to="/" className={linkCls}>
+            {homeLabel}
+          </AnchorLink>
+          {(!hideUsers || onExport) && <Divider />}
         </>
       )}
 
-      <Divider />
-      <ThemeToggle />
+      {/* Users (conditionally rendered) */}
+      {!hideUsers && (
+        <>
+          <AnchorLink to="/users" className={linkCls}>
+            Users
+          </AnchorLink>
+          {onExport && <Divider />}
+        </>
+      )}
 
+      {/* Export (optional) */}
+      {typeof onExport === "function" && (
+        <>
+          <button type="button" onClick={onExport} className={linkCls}>
+            Export
+          </button>
+          <Divider />
+        </>
+      )}
+
+      <ThemeToggle />
       <Divider />
+
+      {/* Avatar / menu */}
       <div className="relative" ref={menuRef}>
         <button
           type="button"
@@ -123,8 +147,15 @@ export default function HeaderActions({
           <motion.div
             initial={{ opacity: 0, y: 6, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.12 }}
-            className="absolute top-11 right-0 min-w-[164px] rounded-xl border border-elev bg-surface shadow-lg p-1.5 z-50"
+            transition={{ duration: 0.16 }}
+            className="
+              absolute top-11 right-0 min-w-[164px] z-50
+              rounded-2xl p-2
+              bg-white/5 dark:bg-white/2
+              backdrop-blur-xl backdrop-saturate-200
+              border border-white/20 dark:border-white/10
+              shadow-[0_4px_24px_rgba(0,0,0,0.2)]
+            "
           >
             <button
               type="button"
@@ -133,7 +164,8 @@ export default function HeaderActions({
                 onRequestLogout();
               }}
               className="w-full inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                         text-foreground hover:bg-muted focus:outline-none"
+                         text-foreground/90 hover:bg-white/20 dark:hover:bg-white/10
+                         focus:outline-none transition"
             >
               <LogOut className="w-4 h-4 text-foreground/70" />
               Logout

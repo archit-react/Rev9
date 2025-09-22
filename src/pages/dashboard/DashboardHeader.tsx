@@ -21,7 +21,7 @@ export default function DashboardHeader({
 }: Props) {
   return (
     <div className="flex items-center justify-between mb-6 -mt-3">
-      {/* Left: brand + period */}
+      {/* Left: brand + period toggle */}
       <div className="flex items-center gap-3 sm:gap-4">
         <div className="flex items-center gap-3 shrink-0">
           <BrandMark />
@@ -35,11 +35,13 @@ export default function DashboardHeader({
         </div>
       </div>
 
-      {/* Right: Home | Users | Export | Theme | Avatar */}
+      {/* Right: Users | Export | Theme | Avatar */}
       <HeaderActions
         avatarSrc={avatarSrc}
         onRequestLogout={onRequestLogout}
         onExport={onExport}
+        hideHome
+        hideUsers={false}
       />
     </div>
   );
