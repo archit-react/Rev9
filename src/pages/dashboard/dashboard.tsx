@@ -1,22 +1,16 @@
 // src/pages/dashboard/dashboard.tsx
-import { useState, useEffect, useCallback, useRef } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import {
-  Linkedin,
-  Github,
-  Link as LinkIcon,
-  Download,
-  LogOut,
-} from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { Linkedin, Github, Link as LinkIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 import PageTitle from "@/components/PageTitle";
-import ThemeToggle from "@/components/ThemeToggle";
-import UserModal from "@/components/UserModal"; // no named type import
+import UserModal from "@/components/UserModal";
 import Toast from "@/components/ui/Toast";
 import { api } from "@/lib/api";
 import { logout as clearAuth } from "@/lib/api";
 import adminAvatar from "@/assets/admin.png";
+import HeaderActions from "@/components/header/HeaderActions"; // ✅ use reusable header
 
 // Dashboard modules (local)
 import PeriodToggle from "./PeriodToggle";
@@ -34,7 +28,7 @@ import {
   type Period,
 } from "./constants";
 import { buildRevenueReportCSV } from "./utils";
-import { useAnimatedCounters } from "./useAnimatedCounters"; // named import
+import { useAnimatedCounters } from "./useAnimatedCounters";
 
 type UserModalProps = React.ComponentProps<typeof UserModal>;
 type User = UserModalProps["user"];
@@ -139,6 +133,7 @@ export default function Dashboard() {
     }
   };
 
+  // ✅ Export handler — now wired into HeaderActions
   const handleExport = () => {
     const csv = buildRevenueReportCSV({
       period: activeTab,
@@ -184,32 +179,13 @@ export default function Dashboard() {
     return () => document.removeEventListener("keydown", onKey);
   }, [confirmOpen, handleLogout]);
 
-  // avatar dropdown
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const onDown = (e: MouseEvent) => {
-      const el = menuRef.current;
-      if (!el) return;
-      if (el.contains(e.target as Node)) return;
-      setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, []);
-
-  // Link style (bold always; cyan in dark; underline on hover)
-  const linkCls =
-    "font-semibold outline-none focus-visible:ring-2 ring-indigo-400/40 hover:underline underline-offset-4 decoration-1 " +
-    "text-gray-900 dark:text-cyan-300 dark:hover:text-cyan-200 transition";
-
   return (
     <>
       <PageTitle title="Dashboard" />
 
-      {/* Header: Brand + (Left controls)  •  (Right) Home|Users + Theme + Avatar */}
+      {/* Header: Brand (left) • Period + Actions (right) */}
       <div className="flex items-center justify-between mb-6 -mt-3">
-        {/* LEFT: Brand + period/export */}
+        {/* LEFT: Brand + period */}
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-3 shrink-0">
             <BrandMark />
@@ -218,88 +194,17 @@ export default function Dashboard() {
             </h1>
           </div>
 
-          {/* move Today/ThisWeek/ThisMonth + Export here */}
           <div className="hidden sm:flex items-center gap-3 sm:gap-4 ml-2">
             <PeriodToggle value={activeTab} onChange={(p) => setActiveTab(p)} />
-            <button
-              type="button"
-              onClick={handleExport}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/30"
-              aria-label="Export revenue report as CSV"
-            >
-              <Download className="w-4 h-4" />
-              <span>Export</span>
-            </button>
           </div>
         </div>
 
-        {/* RIGHT: Home | Users | Theme | Avatar */}
-        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-          <nav className="flex items-center gap-2 sm:gap-3">
-            <NavLink to="/" end className={() => linkCls}>
-              Home
-            </NavLink>
-            <span
-              className="text-gray-300 dark:text-gray-600 select-none"
-              aria-hidden="true"
-            >
-              |
-            </span>
-            <NavLink to="/users" className={() => linkCls}>
-              Users
-            </NavLink>
-          </nav>
-
-          <span className="text-gray-300 dark:text-gray-600 select-none">
-            |
-          </span>
-          <ThemeToggle />
-
-          <span className="text-gray-300 dark:text-gray-600 select-none">
-            |
-          </span>
-          <div className="relative" ref={menuRef}>
-            <button
-              type="button"
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-haspopup="menu"
-              aria-expanded={menuOpen}
-              aria-label="Open user menu"
-              className="rounded-full transition shadow-none focus-visible:outline-none hover:ring-2 hover:ring-cyan-400/50 dark:hover:ring-cyan-300/50 hover:ring-offset-2 hover:ring-offset-transparent"
-            >
-              <img
-                src={adminAvatar}
-                alt="Admin avatar"
-                className="w-9 h-9 rounded-full object-cover"
-              />
-            </button>
-
-            {menuOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 6, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 6, scale: 0.98 }}
-                transition={{ duration: 0.12 }}
-                role="menu"
-                aria-orientation="vertical"
-                className="absolute top-11 right-0 min-w-[164px] rounded-xl border border-elev bg-surface shadow-lg p-1.5 z-50"
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    setConfirmOpen(true);
-                  }}
-                  role="menuitem"
-                  className="w-full inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted focus:outline-none"
-                >
-                  <LogOut className="w-4 h-4 text-foreground/70" />
-                  Logout
-                </button>
-              </motion.div>
-            )}
-          </div>
-        </div>
+        {/* RIGHT: Home | Users | Export | Theme | Avatar */}
+        <HeaderActions
+          avatarSrc={adminAvatar}
+          onRequestLogout={() => setConfirmOpen(true)}
+          onExport={handleExport}
+        />
       </div>
 
       {/* Metrics */}
