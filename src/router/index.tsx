@@ -1,23 +1,24 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import MainLayout from "@/layout/MainLayout";
+
 import Dashboard from "@/pages/dashboard/dashboard";
 import Users from "@/pages/Users";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Signup from "@/pages/signup";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AppLayout from "@/layout/AppLayout"; // ⬅️ renamed
 
 export const router = createBrowserRouter([
   // Public routes
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
 
-  // Protected routes
+  // Protected routes (wrap with ProtectedRoute + AppLayout)
   {
     path: "/",
     element: (
       <ProtectedRoute>
-        <MainLayout />
+        <AppLayout />
       </ProtectedRoute>
     ),
     children: [

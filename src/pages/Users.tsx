@@ -1,11 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+// src/pages/Users.tsx
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Search, BarChart3 } from "lucide-react";
 
 import user1 from "../assets/user 1.png";
 import user2 from "../assets/user 2.png";
 import user3 from "../assets/user 3.png";
+import adminAvatar from "@/assets/admin.png";
+
 import { api } from "@/lib/api";
+import { logout as clearAuth } from "@/lib/api";
+
 import PageTitle from "@/components/PageTitle";
+import HeaderActions from "@/components/header/HeaderActions";
 
 /* ------------------------------- Types -------------------------------- */
 
@@ -48,6 +56,28 @@ const toRoleKey = (role?: string): RoleKey => {
   if (r === "admin" || r === "editor" || r === "user") return r;
   return "other";
 };
+
+/* --------------------------- Brand mark (same as Dashboard) ----------- */
+function BrandMark() {
+  return (
+    <div className="relative w-8 h-8 sm:w-9 sm:h-9 text-[#7c3aed] -translate-y-[1px] shrink-0">
+      <svg
+        className="absolute inset-0 block"
+        fill="none"
+        viewBox="0 0 48 48"
+        aria-hidden="true"
+      >
+        <path
+          d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"
+          fill="currentColor"
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-white text-[19px] sm:text-[21px] font-extrabold leading-none select-none -translate-y-[0.5px]">
+        $
+      </span>
+    </div>
+  );
+}
 
 /* ---------------------- Unique Skeleton Components ---------------------- */
 
@@ -98,6 +128,28 @@ export default function UsersPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const PAGE_SIZE = 4;
+
+  // --- HeaderActions: confirm logout flow (same as Dashboard) ---
+  const navigate = useNavigate();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleLogout = useCallback(() => {
+    try {
+      clearAuth(); // removes token + user
+    } finally {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!confirmOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setConfirmOpen(false);
+      if (e.key === "Enter") handleLogout();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [confirmOpen, handleLogout]);
 
   useEffect(() => {
     let isMounted = true;
@@ -185,6 +237,23 @@ export default function UsersPage() {
     <div className="relative px-6 pt-2 min-h-dvh pb-8">
       {/* Dynamic tab title */}
       <PageTitle title="Users" />
+
+      {/* Header row (same pattern as Dashboard): Brand on left • actions on right */}
+      <div className="flex items-center justify-between mb-6 -mt-3">
+        <div className="flex items-center gap-3 shrink-0">
+          <BrandMark />
+          <h1 className="font-['General Sans'] text-[28px] sm:text-[30px] md:text-[32px] font-semibold tracking-tight text-gray-900 dark:text-white">
+            Rev9
+          </h1>
+        </div>
+
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+          <HeaderActions
+            avatarSrc={adminAvatar}
+            onRequestLogout={() => setConfirmOpen(true)}
+          />
+        </div>
+      </div>
 
       {/* Title + Search */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 -mt-3 sm:-mt-6 mb-6">
@@ -382,6 +451,52 @@ export default function UsersPage() {
           </button>
         </div>
       </div>
+
+      {/* Confirm Logout Modal (same as Dashboard) */}
+      {confirmOpen && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-black/40 backdrop-blur-[1px] transition-opacity"
+            onClick={() => setConfirmOpen(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            transition={{ duration: 0.12 }}
+            className="relative z-50 w-[92%] max-w-sm rounded-2xl bg-white dark:bg-[#111213] border border-elev p-5 shadow-xl"
+          >
+            <h2 className="text-base font-semibold text-foreground mb-1">
+              Sign out?
+            </h2>
+            <p className="text-sm text-foreground/70 mb-5">
+              You’ll need to log in again to access the dashboard.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className="px-4 h-10 rounded-full border border-elev text-sm hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                autoFocus
+                className="px-4 h-10 rounded-full bg-red-600 text-white text-sm hover:bg-red-500 active:bg-red-700"
+              >
+                Logout
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

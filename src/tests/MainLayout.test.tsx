@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import MainLayout from "../layout/MainLayout";
+import MainLayout from "../layout/AppLayout";
 import { MemoryRouter } from "react-router-dom";
 
 describe("MainLayout", () => {
