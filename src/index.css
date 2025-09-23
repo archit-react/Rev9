@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* -----------------------------------------------------------
-   THEME TOKENS (ChatGPT-like)
+   THEME TOKENS
 ----------------------------------------------------------- */
 :root {
   /* base */
@@ -12,12 +12,12 @@
   --primary: 240 100% 60%;
   --muted: 240 5% 94%;
 
-  /* light */
-  --app-bg: 220 14% 97%; /* page bg */
-  --sidebar-bg: 0 0% 100%; /* sidebar */
-  --surface: 0 0% 100%; /* cards */
+  /* light surfaces */
+  --app-bg: 220 14% 97%;
+  --sidebar-bg: 0 0% 100%;
+  --surface: 0 0% 100%;
 
-  /* --- COIN THEME (light) --- */
+  /* coin theme (light) */
   --coin-fill: hsl(44 94% 54%);
   --coin-edge: hsl(38 85% 40%);
   --coin-ring: hsl(44 90% 66% / 0.70);
@@ -32,12 +32,12 @@
   --primary: 265 94% 66%;
   --muted: 240 5% 18%;
 
-  /* ChatGPT-ish dark: main is deeper than sidebar */
-  --app-bg: 220 8% 10%; /* ≈ #171a1f (main canvas) */
-  --sidebar-bg: 220 7% 13%; /* ≈ #202123 (left rail)   */
-  --surface: 220 6% 15%; /* ≈ #23262b (cards)       */
+  /* dark surfaces */
+  --app-bg: 220 8% 10%;
+  --sidebar-bg: 220 7% 13%;
+  --surface: 220 6% 15%;
 
-  /* --- COIN THEME (dark) --- */
+  /* coin theme (dark) */
   --coin-fill: hsl(44 93% 52%);
   --coin-edge: hsl(38 90% 35%);
   --coin-ring: hsl(44 95% 70% / 0.55);
@@ -49,13 +49,10 @@
    GLOBAL BASE
 ----------------------------------------------------------- */
 html {
-  /* NEW: make text rendering consistent across focus/hover layers */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-
-  /* NEW: color shown during rubber-band/overscroll (under the body) */
-  background-color: #000;
+  background-color: #000; /* overscroll backdrop */
 }
 
 body {
@@ -63,104 +60,88 @@ body {
   color: hsl(var(--foreground));
 }
 
+/* ✅ Full-width root (fix shrink) */
+#root {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;        /* your pages handle their own spacing */
+  text-align: left;  /* dashboards are usually left-aligned */
+}
+
 /* -----------------------------------------------------------
    UTILITIES
 ----------------------------------------------------------- */
 @layer utilities {
-  .bg-app {
-    background-color: hsl(var(--app-bg));
-  }
-  .bg-sidebar {
-    background-color: hsl(var(--sidebar-bg));
-  }
-  .bg-surface {
-    background-color: hsl(var(--surface));
-  }
-  .text-soft {
-    color: hsl(var(--foreground) / 0.65);
-  }
+  .bg-app { background-color: hsl(var(--app-bg)); }
+  .bg-sidebar { background-color: hsl(var(--sidebar-bg)); }
+  .bg-surface { background-color: hsl(var(--surface)); }
+  .text-soft { color: hsl(var(--foreground) / 0.65); }
 
   /* hairline borders */
-  .border-elev {
-    border: 1px solid rgba(2, 6, 23, 0.06);
-  }
-  .dark .border-elev {
-    border-color: rgba(255, 255, 255, 0.06);
-  }
+  .border-elev { border: 1px solid rgba(2, 6, 23, 0.06); }
+  .dark .border-elev { border-color: rgba(255, 255, 255, 0.06); }
 
   /* flatten shadows */
   .shadow-fresh,
   .shadow-fresh-hover,
-  .shadow-fresh-hover:hover {
-    box-shadow: none !important;
-  }
+  .shadow-fresh-hover:hover { box-shadow: none !important; }
 
-  /* tiny inset edge (optional) */
-  .card-inset {
-    position: relative;
-  }
+  /* subtle inner edge for cards (optional) */
+  .card-inset { position: relative; }
   .card-inset::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
       inset 0 -1px 0 rgba(0, 0, 0, 0.18);
     pointer-events: none;
   }
 
-  /* >>> ChatGPT-like main canvas glow */
+  /* ChatGPT-like canvas glow */
   .app-gradient {
-    background: radial-gradient(
-        800px 300px at 50% 0%,
-        rgba(124, 58, 237, 0.08),
-        transparent 60%
-      ),
-      radial-gradient(
-        900px 340px at 50% 100%,
-        rgba(124, 58, 237, 0.06),
-        transparent 62%
-      ),
+    background:
+      radial-gradient(800px 300px at 50% 0%, rgba(124, 58, 237, 0.08), transparent 60%),
+      radial-gradient(900px 340px at 50% 100%, rgba(124, 58, 237, 0.06), transparent 62%),
       hsl(var(--app-bg));
   }
   .dark .app-gradient {
-    background: radial-gradient(
-        900px 360px at 50% 0%,
-        rgba(124, 58, 237, 0.06),
-        transparent 62%
-      ),
-      radial-gradient(
-        1000px 420px at 50% 100%,
-        rgba(124, 58, 237, 0.05),
-        transparent 64%
-      ),
+    background:
+      radial-gradient(900px 360px at 50% 0%, rgba(124, 58, 237, 0.06), transparent 62%),
+      radial-gradient(1000px 420px at 50% 100%, rgba(124, 58, 237, 0.05), transparent 64%),
       hsl(var(--app-bg));
   }
 
-  /* optional: hairline divider on sidebar’s right edge */
-  .sidebar-edge {
-    position: relative;
-  }
+  /* optional: hairline divider for sidebar edge */
+  .sidebar-edge { position: relative; }
   .sidebar-edge::after {
     content: "";
     position: absolute;
-    top: 0;
-    right: -1px;
-    bottom: 0;
+    top: 0; right: -1px; bottom: 0;
     width: 1px;
     background: rgba(2, 6, 23, 0.06);
   }
-  .dark .sidebar-edge::after {
-    background: rgba(255, 255, 255, 0.06);
-  }
+  .dark .sidebar-edge::after { background: rgba(255, 255, 255, 0.06); }
 
-  /* --- COIN MOTION UTILITY --- */
-  .animate-coin {
-    animation: coin-motion 2.8s cubic-bezier(.2,.7,.2,1) infinite;
+  /* coin motion utility */
+  .animate-coin { animation: coin-motion 2.8s cubic-bezier(.2,.7,.2,1) infinite; }
+
+  /* 🌫️ Frosted glass card (use on stat cards & panels) */
+  .glass-card {
+    background-color: rgba(255, 255, 255, 0.04);
+    @apply backdrop-blur-xl border border-white/10 rounded-xl shadow-lg;
+  }
+  .dark .glass-card {
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+  .glass-card:hover {
+    background-color: rgba(255, 255, 255, 0.06);
   }
 }
 
-/* --- COIN KEYFRAMES (kept outside @layer for clarity) --- */
+/* coin keyframes */
 @keyframes coin-motion {
   0%   { transform: translate3d(0,0,0) rotate(0deg); opacity: 0; }
   10%  { opacity: 1; }

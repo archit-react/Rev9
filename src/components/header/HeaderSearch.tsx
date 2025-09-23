@@ -6,7 +6,10 @@ type Props = {
   onSearch?: (value: string) => void;
   defaultValue?: string;
   className?: string;
+  /** show the “/” hint on the right; default false for the JSR look */
   showShortcutHint?: boolean;
+  /** visual size: "default" (old) or "slim" (JSR-like) */
+  size?: "default" | "slim";
 };
 
 export default function HeaderSearch({
@@ -15,11 +18,12 @@ export default function HeaderSearch({
   defaultValue = "",
   className = "",
   showShortcutHint = false,
+  size = "default",
 }: Props) {
   const [value, setValue] = useState(defaultValue);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus with "/" (JSR-like)
+  // Focus input when user presses "/" anywhere (like JSR)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey) {
@@ -36,21 +40,27 @@ export default function HeaderSearch({
     onSearch?.(value.trim());
   };
 
+  const isSlim = size === "slim";
+
   return (
     <form onSubmit={submit} className={`w-full ${className}`}>
       <label
-        className="
-          group relative block rounded-md
-          h-11 md:h-12
+        className={`
+          group relative block rounded-md transition
           bg-white/90 dark:bg-[#0b1117]/90
-          border border-black/10 dark:border-white/10
-          shadow-sm transition
+          border border-black/10 dark:border-white/10 shadow-sm
+          hover:border-black/20 dark:hover:border-white/15
           focus-within:border-black dark:focus-within:border-cyan-500
           focus-within:ring-2 focus-within:ring-black/60 dark:focus-within:ring-cyan-500
-        "
+          ${isSlim ? "py-1" : "py-2"}
+        `}
       >
         <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 dark:text-white/50"
+          className={`
+            absolute left-3 top-1/2 -translate-y-1/2
+            ${isSlim ? "w-4 h-4" : "w-4 h-4"}
+            text-black/50 dark:text-white/50
+          `}
           aria-hidden
         />
         <input
@@ -58,13 +68,13 @@ export default function HeaderSearch({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={placeholder}
-          className="
-            w-full h-full pl-10 pr-10
-            bg-transparent
+          className={`
+            w-full bg-transparent outline-none
+            pl-10 pr-10
+            ${isSlim ? "py-1.5 text-sm" : "py-2.5"}
             text-black dark:text-white
             placeholder:text-black/50 dark:placeholder:text-white/50
-            outline-none
-          "
+          `}
           aria-label={placeholder}
         />
 

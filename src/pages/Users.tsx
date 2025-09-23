@@ -134,7 +134,7 @@ export default function UsersPage() {
   /* ------------------------------ Render ------------------------------- */
 
   return (
-    <div className="relative px-6 pt-0 min-h-dvh pb-8">
+    <div className="relative 7 pt-0 min-h-dvh pb-8">
       <PageTitle title="Users" />
 
       {/* Header row — same baseline/height as dashboard */}
@@ -148,11 +148,13 @@ export default function UsersPage() {
         </div>
 
         {/* Center: Search (desktop) — fills middle, same row height */}
+
         <div className="hidden sm:flex flex-1 items-center h-full">
           <HeaderSearch
+            size="slim"
             onSearch={handleHeaderSearch}
             defaultValue={query}
-            className="w-full"
+            className="w-full max-w-[1200px] mx-4"
           />
         </div>
 
