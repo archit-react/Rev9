@@ -18,6 +18,8 @@ import ConfirmLogoutModal from "@/components/ConfirmLogoutModal";
 import UserList from "./users/UserList";
 import RolesCard from "./users/RolesCard";
 import Pagination from "./users/pagination";
+import HeaderBar from "@/components/header/HeaderBar";
+
 
 import { toRoleKey } from "./users/helpers";
 import type { ApiError, RoleKey, User } from "./users/types";
