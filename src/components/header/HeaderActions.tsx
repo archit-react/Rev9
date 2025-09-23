@@ -128,25 +128,26 @@ export default function HeaderActions({
       <Divider />
 
       {/* Avatar / menu */}
-      <div className="relative" ref={menuRef}>
-        <button
-          type="button"
-          onClick={() => setMenuOpen((v) => !v)}
-          className="rounded-full transition focus-visible:outline-none
-                     hover:ring-2 hover:ring-cyan-400/50 dark:hover:ring-cyan-300/50
-                     hover:ring-offset-2 hover:ring-offset-transparent"
-        >
-          <img
-            src={avatarSrc}
-            alt="Admin avatar"
-            className="
-    w-9 h-9 rounded-full object-cover
-    transition
-    hover:ring-2 hover:ring-cyan-400 mt-2
-    hover:ring-offset-2 hover:ring-offset-surface
-  "
-          />
-        </button>
+     <div className="relative" ref={menuRef}>
+  <button
+    type="button"
+    onClick={() => setMenuOpen((v) => !v)}
+    className="
+      rounded-full transition
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60
+      hover:ring-2 hover:ring-cyan-400/60
+      hover:ring-offset-2 hover:ring-offset-surface
+    "
+    aria-haspopup="menu"
+    aria-expanded={menuOpen}
+    aria-label="Open user menu"
+  >
+    <img
+      src={avatarSrc}
+      alt="Admin avatar"
+      className="w-9 h-9 rounded-full object-cover" 
+    />
+  </button>
 
         {menuOpen && (
           <motion.div
