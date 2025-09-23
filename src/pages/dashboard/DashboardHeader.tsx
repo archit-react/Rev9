@@ -3,6 +3,7 @@ import HeaderActions from "@/components/header/HeaderActions";
 import PeriodToggle from "./PeriodToggle";
 import type { Period } from "./constants";
 
+
 type Props = {
   activeTab: Period;
   onChangeTab: (p: Period) => void;

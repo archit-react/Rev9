@@ -75,7 +75,7 @@ export default function MetricsGrid({
   ];
 
   return (
-    <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <div className="-mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
       {tiles.map((card) => {
         // Delta coloring rules only apply to Users/Revenue, matching original behavior.
         const isUsersOrRevenue =
