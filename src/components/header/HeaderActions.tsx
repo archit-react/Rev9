@@ -139,7 +139,12 @@ export default function HeaderActions({
           <img
             src={avatarSrc}
             alt="Admin avatar"
-            className="w-9 h-9 rounded-full object-cover mt-2"
+            className="
+    w-9 h-9 rounded-full object-cover
+    transition
+    hover:ring-2 hover:ring-cyan-400 mt-2
+    hover:ring-offset-2 hover:ring-offset-surface
+  "
           />
         </button>
 
