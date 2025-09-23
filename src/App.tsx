@@ -1,3 +1,4 @@
+// src/App.tsx
 import { useEffect, useState } from "react";
 
 function App() {
@@ -6,7 +7,6 @@ function App() {
   const [input, setInput] = useState("");
   const [response, setResponse] = useState("");
 
-  // Fetch backend GET message
   useEffect(() => {
     fetch("http://localhost:5001/api/message")
       .then((res) => res.json())
@@ -14,7 +14,6 @@ function App() {
       .catch((err) => console.error("Error fetching data:", err));
   }, []);
 
-  // Send POST request to backend
   const sendData = async () => {
     try {
       const res = await fetch("http://localhost:5001/api/echo", {
@@ -31,16 +30,13 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Main content wrapper grows to fill space above footer */}
+      {/* Main content wrapper grows to fill space */}
       <main className="flex-1 p-6">
         <h1>Vite + React</h1>
-
-        {/* Show message from backend */}
         <h2 className="text-green-600">
           Backend says: {message || "Loading..."}
         </h2>
 
-        {/* Input + button for POST request */}
         <div className="mt-5">
           <input
             type="text"
@@ -57,13 +53,11 @@ function App() {
           </button>
         </div>
 
-        {/* Show response */}
         {response && <p className="mt-5 text-blue-600">{response}</p>}
 
-        {/* Vite counter demo */}
         <div className="card mt-10">
           <button
-            onClick={() => setCount((count) => count + 1)}
+            onClick={() => setCount((c) => c + 1)}
             className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
           >
             count is {count}
@@ -71,10 +65,7 @@ function App() {
         </div>
       </main>
 
-      {/* Footer placeholder (will replace with real footer later) */}
-      <footer className="border-t border-gray-200 dark:border-gray-800 p-4 text-center text-sm text-gray-500">
-        © 2025 Rev9
-      </footer>
+
     </div>
   );
 }
