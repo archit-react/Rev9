@@ -1,3 +1,4 @@
+// src/components/header/Rev9Logo.tsx
 import * as React from "react";
 
 /**
@@ -5,7 +6,7 @@ import * as React from "react";
  * - Animated money gradient that gently pans (CSS keyframes)
  * - Soft outer glow (different in light vs dark)
  * - Per-letter slide-in (staggered) for a lively entrance
- * - Tiny “cash sparkles” that float up randomly (JSR-inspired motion variety)
+ * - Tiny “cash sparkles” that float up randomly (JSR-inspired)
  * - Respects prefers-reduced-motion
  *
  * Props:
@@ -14,20 +15,26 @@ import * as React from "react";
  */
 type Props = { className?: string; label?: string };
 
-const SPARKLES = Array.from({ length: 14 }).map((_, i) => ({
-  // light random scatter around the word
+// Sparkle points (randomized once on module load)
+const SPARKLES = Array.from({ length: 14 }).map(() => ({
   x: (Math.random() * 100).toFixed(2),
   y: (Math.random() * 38 + 20).toFixed(2),
-  d: 800 + Math.floor(Math.random() * 1200), // ms
+  d: 800 + Math.floor(Math.random() * 1200), // duration ms
   s: (Math.random() * 0.7 + 0.6).toFixed(2), // scale
-  dl: Math.floor(Math.random() * 900), // delay
+  dl: Math.floor(Math.random() * 900), // delay ms
 }));
+
+// Helper type for CSS custom props
+type CSSVars = React.CSSProperties & {
+  ["--dur"]?: string;
+  ["--scale"]?: string | number;
+  ["--delay"]?: string | number;
+};
 
 export default function Rev9Logo({
   className = "h-12",
   label = "Rev9",
 }: Props) {
-  // Split into letters so we can stagger entrance
   const letters = Array.from(label);
 
   return (
@@ -46,7 +53,6 @@ export default function Rev9Logo({
           <stop offset="100%" stopColor="var(--rev9-g3, #16a34a)" />
         </linearGradient>
 
-        {/* We animate the gradient by moving this gradientRect mask */}
         <clipPath id="rev9-clip">
           <text
             x="10"
@@ -60,18 +66,17 @@ export default function Rev9Logo({
           </text>
         </clipPath>
 
-        {/* Stroke outline to keep readable on white or dark */}
+        {/* Outline/glow so it reads on light/dark */}
         <filter id="rev9-glow" x="-30%" y="-50%" width="160%" height="200%">
           <feDropShadow dx="0" dy="2" stdDeviation="6" floodOpacity="0.28" />
         </filter>
 
-        {/* Sparkle (small circle) */}
+        {/* Sparkle symbol */}
         <symbol id="rev9-spark" viewBox="0 0 10 10">
           <circle cx="5" cy="5" r="2.1" fill="url(#rev9-money)" />
         </symbol>
       </defs>
 
-      {/* --- Styles: all scoped to this SVG --- */}
       <style>
         {`
         :root {
@@ -87,19 +92,15 @@ export default function Rev9Logo({
           --rev9-g3: #3b82f6; /* blue-500 */
         }
 
-        /* Slide-in per-letter */
         .rev9-letter {
           opacity: 0;
           transform: translateY(18px);
           animation: rev9_in 600ms cubic-bezier(.2,.7,.2,1) forwards;
         }
-        /* small stagger via style attr */
-
         @keyframes rev9_in {
           to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Gradient pan (gives living money feel) */
         .rev9-sheen {
           animation: rev9_pan 4600ms linear infinite;
         }
@@ -108,9 +109,8 @@ export default function Rev9Logo({
           100% { transform: translateX(20%); }
         }
 
-        /* Sparkles drift upward + fade */
         .rev9-float {
-          animation: rev9_float var(--dur) ease-in var(--delay)ms infinite;
+          animation: rev9_float var(--dur) ease-in var(--delay) infinite;
           opacity: 0.0;
         }
         @keyframes rev9_float {
@@ -119,7 +119,6 @@ export default function Rev9Logo({
           100% { transform: translateY(-28px) scale(var(--scale)); opacity: 0; }
         }
 
-        /* Reduce motion */
         @media (prefers-reduced-motion: reduce) {
           .rev9-sheen, .rev9-float, .rev9-letter {
             animation-duration: 0ms !important;
@@ -129,7 +128,7 @@ export default function Rev9Logo({
       `}
       </style>
 
-      {/* Outline text to keep readable (paint-order ensures stroke behind fill) */}
+      {/* Stroke/outline for readability */}
       <text
         x="10"
         y="92"
@@ -146,9 +145,8 @@ export default function Rev9Logo({
         {label}
       </text>
 
-      {/* Gradient fill masked to the text, with slow pan */}
+      {/* Gradient fill masked to text with slow pan */}
       <g clipPath="url(#rev9-clip)">
-        {/* Sheen rect (pans horizontally) */}
         <rect
           className="rev9-sheen"
           x="-20%"
@@ -159,11 +157,11 @@ export default function Rev9Logo({
         />
       </g>
 
-      {/* Per-letter entrance (slight JSR vibe without squares) */}
+      {/* Per-letter entrance (staggered) */}
       {letters.map((ch, i) => (
         <text
           key={i}
-          x={10 + i * 56} // crude monospace-ish offset; Audiowide looks good here
+          x={10 + i * 56}
           y={92}
           className="rev9-letter"
           style={{ animationDelay: `${80 + i * 80}ms` }}
@@ -177,25 +175,25 @@ export default function Rev9Logo({
         </text>
       ))}
 
-      {/* Money sparkles (JSR-inspired little pieces with varied timing) */}
-      {SPARKLES.map((s, i) => (
-        <use
-          key={i}
-          href="#rev9-spark"
-          x={s.x}
-          y={s.y}
-          className="rev9-float"
-          style={
-            {
-              // @ts-ignore custom CSS vars
-              "--dur": `${s.d}ms`,
-              "--scale": s.s,
-              "--delay": s.dl,
-            } as React.CSSProperties
-          }
-          opacity="0.95"
-        />
-      ))}
+      {/* Sparkles */}
+      {SPARKLES.map((s, i) => {
+        const style: CSSVars = {
+          ["--dur"]: `${s.d}ms`,
+          ["--scale"]: s.s,
+          ["--delay"]: `${s.dl}ms`,
+        };
+        return (
+          <use
+            key={i}
+            href="#rev9-spark"
+            x={s.x}
+            y={s.y}
+            className="rev9-float"
+            style={style}
+            opacity="0.95"
+          />
+        );
+      })}
     </svg>
   );
 }
