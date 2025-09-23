@@ -19,6 +19,8 @@ import {
   Tooltip,
 } from "recharts";
 import { chartData, baseline6m } from "./constants";
+import PeriodToggle from "./PeriodToggle"; // ← ADDED
+import type { Period } from "./constants"; // ← ADDED
 
 type TooltipPayload = { value: number }[];
 
@@ -71,7 +73,14 @@ const CustomXAxisTick: React.FC<{
   );
 };
 
-export default function RevenueTrend() {
+/** Props for optionally showing the period toggle inside the card */
+type Props = {
+  /** If provided, shows the PeriodToggle inside the card (top-right). */
+  period?: Period;
+  onChangePeriod?: (p: Period) => void;
+};
+
+export default function RevenueTrend({ period, onChangePeriod }: Props) {
   // Derive totals here to keep the page shell skinny.
   const totalRevenue6m = chartData.reduce((s, m) => s + m.revenue, 0);
 
@@ -82,6 +91,25 @@ export default function RevenueTrend() {
 
   return (
     <div className="relative mt-8 rounded-2xl bg-surface border border-elev card-inset overflow-hidden">
+      {/* Period toggle inside the card (top-right). Only renders if props provided */}
+      {period && onChangePeriod && (
+        <div className="absolute top-5 right-5 z-10 pointer-events-auto">
+          {/* Docked pill so the toggle feels part of the card */}
+          <div
+            className="
+        
+        border-black/5 dark:border-white/10
+       
+       
+        backdrop-blur supports-[backdrop-filter]:backdrop-blur-md
+        px-6   py-6
+      "
+          >
+            <PeriodToggle value={period} onChange={onChangePeriod} />
+          </div>
+        </div>
+      )}
+
       <div className="px-6 pt-5 pb-2">
         <p className="text-base font-medium text-foreground/70">
           Revenue Trend

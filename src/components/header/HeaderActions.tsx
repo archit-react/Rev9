@@ -86,9 +86,9 @@ export default function HeaderActions({
   useOnClickOutside(menuRef, () => setMenuOpen(false));
 
   const linkCls =
-    "font-semibold outline-none focus-visible:ring-2 ring-indigo-400/40 " +
+    "text-lg font-semibold outline-none focus-visible:ring-2 ring-indigo-400/40 " +
     "hover:underline underline-offset-4 decoration-1 " +
-    "text-gray-900 dark:text-cyan-300 dark:hover:text-cyan-200 transition";
+    "text-gray-900 dark:text-cyan-400 dark:hover:text-cyan-300 transition";
 
   return (
     <div
@@ -139,7 +139,7 @@ export default function HeaderActions({
           <img
             src={avatarSrc}
             alt="Admin avatar"
-            className="w-9 h-9 rounded-full object-cover"
+            className="w-9 h-9 rounded-full object-cover mt-2"
           />
         </button>
 

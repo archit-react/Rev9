@@ -51,7 +51,7 @@ const DEFAULT_ITEMS: OverviewItem[] = [
 
 export default function AnalyticalOverview({ items = DEFAULT_ITEMS }: Props) {
   return (
-    <div className="my-8 rounded-2xl bg-surface border border-elev card-inset overflow-hidden">
+    <div className="mt-4 mb-4 rounded-2xl bg-surface border border-elev card-inset overflow-hidden">
       {/* Header — matches RevenueDistribution */}
       <div className="px-6 pt-5 pb-2">
         <p className="text-base font-medium text-foreground/70">

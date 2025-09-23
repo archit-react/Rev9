@@ -10,6 +10,8 @@ type Props = {
   onExport: () => void;
   onRequestLogout: () => void;
   avatarSrc: string;
+  /** Set true to keep PeriodToggle in header; false to hide it (render inside RevenueTrend instead) */
+  renderPeriodInHeader?: boolean;
 };
 
 export default function DashboardHeader({
@@ -18,10 +20,18 @@ export default function DashboardHeader({
   onExport,
   onRequestLogout,
   avatarSrc,
+  renderPeriodInHeader = false, // default: hide in header
 }: Props) {
   return (
-    <div className="flex items-center justify-between mb-6 -mt-3">
-      {/* Left: brand + period toggle */}
+    <div
+      className="
+        flex items-center justify-between
+        mb-6             /* keep bottom space below header */
+        /* removed -mt-3 which caused right side to look lower */
+        min-h-[56px]     /* consistent header bar height */
+      "
+    >
+      {/* Left: brand + (optional) period toggle */}
       <div className="flex items-center gap-3 sm:gap-4">
         <div className="flex items-center gap-3 shrink-0">
           <BrandMark />
@@ -30,9 +40,11 @@ export default function DashboardHeader({
           </h1>
         </div>
 
-        <div className="hidden sm:flex items-center gap-3 sm:gap-4 ml-2">
-          <PeriodToggle value={activeTab} onChange={onChangeTab} />
-        </div>
+        {renderPeriodInHeader && (
+          <div className="hidden sm:flex items-center gap-3 sm:gap-4 ml-2">
+            <PeriodToggle value={activeTab} onChange={onChangeTab} />
+          </div>
+        )}
       </div>
 
       {/* Right: Users | Export | Theme | Avatar */}
@@ -42,6 +54,8 @@ export default function DashboardHeader({
         onExport={onExport}
         hideHome
         hideUsers={false}
+        /* bump text size and nudge the whole block slightly up */
+        className="text-[12px] sm:text-base -mt-[21px]"
       />
     </div>
   );

@@ -169,7 +169,7 @@ export default function Dashboard() {
         revenueDeltaText={revenueDeltaText}
       />
 
-      <RevenueTrend />
+      <RevenueTrend period={activeTab} onChangePeriod={setActiveTab} />
       <RevenueDistribution period={activeTab} />
       <AnalyticalOverview />
 

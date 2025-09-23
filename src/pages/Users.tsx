@@ -155,6 +155,9 @@ export default function UsersPage() {
             onSearch={handleHeaderSearch}
             defaultValue={query}
             className="w-full max-w-[1200px] mx-4"
+            hideIcon
+            placeholder="Search for users"
+            inputClassName="text-[18px] sm:text-[15px] font-medium leading-tight"
           />
         </div>
 
@@ -164,7 +167,8 @@ export default function UsersPage() {
             avatarSrc={adminAvatar}
             onRequestLogout={() => setConfirmOpen(true)}
             homeLabel="Dashboard" // rename Home → Dashboard on this page
-            hideUsers // hide Users link only on this page
+            hideUsers
+            className="-mt-[6px]" // hide Users link only on this page
           />
         </div>
       </div>

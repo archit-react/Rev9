@@ -3,7 +3,8 @@ import { Linkedin, Github, Link as LinkIcon } from "lucide-react";
 
 export default function FooterBar() {
   return (
-    <footer className="border-t border-gray-200 dark:border-gray-800 bg-app">
+    // removed border-t classes; kept bg so it blends with the page
+    <footer className="bg-app">
       <div className="w-full max-w-9xl mx-auto px-3 sm:px-3 py-3">
         <div className="flex flex-col sm:flex-row items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
           <p>© 2025 Rev9</p>
