@@ -1,5 +1,4 @@
 // src/pages/dashboard/DashboardHeader.tsx
-import BrandMark from "@/components/header/BrandMark";
 import HeaderActions from "@/components/header/HeaderActions";
 import PeriodToggle from "./PeriodToggle";
 import type { Period } from "./constants";
@@ -10,7 +9,7 @@ type Props = {
   onExport: () => void;
   onRequestLogout: () => void;
   avatarSrc: string;
-  /** Set true to keep PeriodToggle in header; false to hide it (render inside RevenueTrend instead) */
+  /** Show PeriodToggle inside header; default false to render in chart */
   renderPeriodInHeader?: boolean;
 };
 
@@ -20,28 +19,39 @@ export default function DashboardHeader({
   onExport,
   onRequestLogout,
   avatarSrc,
-  renderPeriodInHeader = false, // default: hide in header
+  renderPeriodInHeader = false,
 }: Props) {
   return (
-    <div
+    <header
       className="
         flex items-center justify-between
-        mb-6             /* keep bottom space below header */
-        /* removed -mt-3 which caused right side to look lower */
-        min-h-[56px]     /* consistent header bar height */
+        mb-6
+        min-h-[64px] sm:min-h-[72px]
       "
     >
-      {/* Left: brand + (optional) period toggle */}
-      <div className="flex items-center gap-3 sm:gap-4">
+      {/* Left: brand + optional period toggle */}
+      <div className="flex items-center gap-4 sm:gap-5">
         <div className="flex items-center gap-3 shrink-0">
-          <BrandMark />
-          <h1 className="font-['General Sans'] text-[28px] sm:text-[30px] md:text-[32px] font-semibold tracking-tight text-gray-900 dark:text-white">
+          {/* Rev9 adaptive money/tech gradient */}
+          <h1
+            className="
+    font-['Audiowide'] font-extrabold
+    text-[38px] sm:text-[44px] md:text-[52px] -mt-9
+    leading-[1.1]            /* tighter line height */
+    tracking-[0.05em]
+    bg-clip-text text-transparent
+    drop-shadow-[0_1px_4px_rgba(0,0,0,0.15)]
+    dark:drop-shadow-[0_1px_6px_rgba(56,189,248,0.5)]
+    bg-gradient-to-r from-emerald-500 via-lime-400 to-green-600
+    dark:from-cyan-400 dark:via-sky-400 dark:to-blue-500
+  "
+          >
             Rev9
           </h1>
         </div>
 
         {renderPeriodInHeader && (
-          <div className="hidden sm:flex items-center gap-3 sm:gap-4 ml-2">
+          <div className="hidden sm:flex items-center ml-2">
             <PeriodToggle value={activeTab} onChange={onChangeTab} />
           </div>
         )}
@@ -54,9 +64,8 @@ export default function DashboardHeader({
         onExport={onExport}
         hideHome
         hideUsers={false}
-        /* bump text size and nudge the whole block slightly up */
-        className="text-[12px] sm:text-base -mt-[21px]"
+        className="text-sm sm:text-base -mt-16"
       />
-    </div>
+    </header>
   );
 }

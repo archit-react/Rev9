@@ -13,7 +13,6 @@ import { logout as clearAuth } from "@/lib/api";
 import PageTitle from "@/components/PageTitle";
 import HeaderActions from "@/components/header/HeaderActions";
 import HeaderSearch from "@/components/header/HeaderSearch";
-import BrandMark from "@/components/header/BrandMark";
 import ConfirmLogoutModal from "@/components/ConfirmLogoutModal";
 
 import UserList from "./users/UserList";
@@ -141,7 +140,7 @@ export default function UsersPage() {
       <div className="flex items-center gap-4 mb-6 h-6">
         {/* Left: Rev9 brand (flush-left, same row height) */}
         <div className="flex items-center gap-3 shrink-0 h-full">
-          <BrandMark />
+       
           <h1 className="font-['General Sans'] text-[28px] sm:text-[30px] md:text-[32px] font-semibold tracking-tight text-gray-900 dark:text-white leading-none">
             Rev9
           </h1>
