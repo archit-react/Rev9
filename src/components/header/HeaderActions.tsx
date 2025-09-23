@@ -145,7 +145,7 @@ export default function HeaderActions({
     <img
       src={avatarSrc}
       alt="Admin avatar"
-      className="w-9 h-9 rounded-full object-cover" 
+      className="w-9 h-9 rounded-full object-cover mt-2" 
     />
   </button>
 
