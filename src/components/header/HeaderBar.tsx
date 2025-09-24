@@ -4,7 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
 import { LogOut } from "lucide-react";
-import Rev9Logo from "@/components/header/Rev9Logo"; // ⬅️ Animated logo
+import Rev9Logo from "@/components/header/Rev9Logo"; 
 
 type Props = {
   onExport?: () => void; // Provide on Dashboard; optional elsewhere

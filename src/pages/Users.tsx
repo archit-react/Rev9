@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
+
 import user1 from "../assets/user 1.png";
 import user2 from "../assets/user 2.png";
 import user3 from "../assets/user 3.png";
@@ -14,6 +15,8 @@ import PageTitle from "@/components/PageTitle";
 import HeaderActions from "@/components/header/HeaderActions";
 import HeaderSearch from "@/components/header/HeaderSearch";
 import ConfirmLogoutModal from "@/components/ConfirmLogoutModal";
+import Rev9Wordmark from "@/components/header/Rev9Wordmark";
+
 
 import UserList from "./users/UserList";
 import RolesCard from "./users/RolesCard";
@@ -141,10 +144,7 @@ export default function UsersPage() {
       <div className="flex items-center gap-4 mb-6 h-6">
         {/* Left: Rev9 brand (flush-left, same row height) */}
         <div className="flex items-center gap-3 shrink-0 h-full">
-       
-          <h1 className="font-['General Sans'] text-[28px] sm:text-[30px] md:text-[32px] font-semibold tracking-tight text-gray-900 dark:text-white leading-none">
-            Rev9
-          </h1>
+          <Rev9Wordmark className="text-[32px] sm:text-[36px] md:text-[42px]" />
         </div>
 
         {/* Center: Search (desktop) — fills middle, same row height */}
