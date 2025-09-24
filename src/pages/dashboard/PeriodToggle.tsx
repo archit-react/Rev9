@@ -57,7 +57,7 @@ export default function PeriodToggle({ value, onChange }: Props) {
             // Keep it controlled: we surface the next value and let the parent own state.
             onClick={() => onChange(label)}
             className={[
-              "px-3.5 py-1.5 rounded-full text-sm font-medium",
+              "px-3.5 py-2 rounded-full text-md font-bold",
               // Focus ring uses CSS vars to match brand token (light/dark safe).
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
               "ring-[var(--primary-color,#3B82F6)] dark:focus-visible:ring-offset-[#0b1220]",
