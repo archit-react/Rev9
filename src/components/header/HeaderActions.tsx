@@ -92,7 +92,7 @@ export default function HeaderActions({
 
   return (
     <div
-      className={`flex items-center gap-2 sm:gap-4 pointer-events-auto ${className}`}
+      className={`flex items-center gap-2 sm:gap-5 pointer-events-auto ${className}`}
     >
       {/* Home (conditionally rendered) */}
       {!hideHome && (
@@ -128,26 +128,29 @@ export default function HeaderActions({
       <Divider />
 
       {/* Avatar / menu */}
-     <div className="relative" ref={menuRef}>
-  <button
-    type="button"
-    onClick={() => setMenuOpen((v) => !v)}
-    className="
-      rounded-full transition
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60
-      hover:ring-2 hover:ring-cyan-400/60
-      hover:ring-offset-2 hover:ring-offset-surface
+      <div className="relative" ref={menuRef}>
+        <button
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          aria-label="Open user menu"
+          className="
+    group inline-grid place-items-center
+    h-10 w-10 mt-2 p-0 rounded-full focus-visible:outline-none
+  "
+        >
+          <img
+            src={avatarSrc}
+            alt="Admin avatar"
+            className="
+      h-10 w-10 rounded-full object-cover block
+      ring-transparent transition
+      group-hover:ring-2 group-hover:ring-cyan-400/60
+      focus-visible:ring-2 focus-visible:ring-indigo-400/40
     "
-    aria-haspopup="menu"
-    aria-expanded={menuOpen}
-    aria-label="Open user menu"
-  >
-    <img
-      src={avatarSrc}
-      alt="Admin avatar"
-      className="w-9 h-9 rounded-full object-cover mt-2" 
-    />
-  </button>
+          />
+        </button>
 
         {menuOpen && (
           <motion.div
