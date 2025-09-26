@@ -3,6 +3,8 @@
   import { useNavigate, Link, useLocation } from "react-router-dom";
   import { api } from "@/lib/api";
   import Button from "@/components/ui/button";
+  import PageTitle from "@/components/PageTitle";
+
 
   /* ---------------- Money Rain (background only) ---------------- */
   function MoneyRain() {
@@ -336,96 +338,97 @@
       );
     }
 
-    return (
-      <div className="relative bg-white min-h-screen flex items-center justify-center">
-        {/* Money rain sits behind everything */}
-        <MoneyRain />
+   return (
+     <div className="relative bg-white min-h-screen flex items-center justify-center">
+       <PageTitle title="Login" />
+       {/* Money rain sits behind everything */}
+       <MoneyRain />
 
-        <div className="relative z-10 w-full max-w-md px-6">
-          {/* Entry toast (from signup redirect) */}
-          {entryToast && (
-            <div
-              role="status"
-              className="mb-4 rounded-lg border border-emerald-500/40 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
-            >
-              {entryToast}
-            </div>
-          )}
+       <div className="relative z-10 w-full max-w-md px-6">
+         {/* Entry toast (from signup redirect) */}
+         {entryToast && (
+           <div
+             role="status"
+             className="mb-4 rounded-lg border border-emerald-500/40 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+           >
+             {entryToast}
+           </div>
+         )}
 
-          {/* Heading */}
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-2 antialiased tracking-tight leading-tight">
-              Rev9
-            </h1>
-            <p className="text-gray-600 mb-8">Log in or Sign up.</p>
-          </div>
+         {/* Heading */}
+         <div className="text-center">
+           <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-2 antialiased tracking-tight leading-tight">
+             Rev9
+           </h1>
+           <p className="text-gray-600 mb-8">Log in or Sign up.</p>
+         </div>
 
-          {/* Error */}
-          {error && (
-            <div
-              role="alert"
-              aria-live="assertive"
-              className="mb-4 rounded-lg border border-red-500/40 bg-red-50 px-3 py-2 text-sm text-red-700"
-            >
-              {error}
-            </div>
-          )}
+         {/* Error */}
+         {error && (
+           <div
+             role="alert"
+             aria-live="assertive"
+             className="mb-4 rounded-lg border border-red-500/40 bg-red-50 px-3 py-2 text-sm text-red-700"
+           >
+             {error}
+           </div>
+         )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Email */}
-            <div id="email-section" className="space-y-4">
-              <div className="relative">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  placeholder="Email address"
-                  className={pillInput}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={handleEmailKeyDown}
-                  aria-describedby="email-help"
-                  required
-                />
-              </div>
-            </div>
+         {/* Form */}
+         <form onSubmit={handleSubmit} noValidate>
+           {/* Email */}
+           <div id="email-section" className="space-y-4">
+             <div className="relative">
+               <input
+                 id="email"
+                 name="email"
+                 type="email"
+                 inputMode="email"
+                 autoComplete="email"
+                 placeholder="Email address"
+                 className={pillInput}
+                 value={email}
+                 onChange={(e) => setEmail(e.target.value)}
+                 onKeyDown={handleEmailKeyDown}
+                 aria-describedby="email-help"
+                 required
+               />
+             </div>
+           </div>
 
-            {/* Password */}
-            <div
-              id="password-section"
-              className={[
-                "overflow-hidden transition-[max-height] duration-500",
-                showPasswordStep ? "max-h-40 mt-4" : "max-h-0",
-              ].join(" ")}
-            >
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={reveal ? "text" : "password"}
-                  autoComplete="current-password"
-                  placeholder="Password"
-                  className={`${pillInput} pr-12`}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyDown={handlePasswordKeyDown}
-                  onFocus={(e) => (e.currentTarget.placeholder = "")}
-                  onBlur={(e) => {
-                    if (!e.currentTarget.value)
-                      e.currentTarget.placeholder = "Password";
-                  }}
-                  required={showPasswordStep}
-                />
+           {/* Password */}
+           <div
+             id="password-section"
+             className={[
+               "overflow-hidden transition-[max-height] duration-500",
+               showPasswordStep ? "max-h-40 mt-4" : "max-h-0",
+             ].join(" ")}
+           >
+             <div className="relative">
+               <input
+                 id="password"
+                 name="password"
+                 type={reveal ? "text" : "password"}
+                 autoComplete="current-password"
+                 placeholder="Password"
+                 className={`${pillInput} pr-12`}
+                 value={password}
+                 onChange={(e) => setPassword(e.target.value)}
+                 onKeyDown={handlePasswordKeyDown}
+                 onFocus={(e) => (e.currentTarget.placeholder = "")}
+                 onBlur={(e) => {
+                   if (!e.currentTarget.value)
+                     e.currentTarget.placeholder = "Password";
+                 }}
+                 required={showPasswordStep}
+               />
 
-                <button
-                  type="button"
-                  onClick={() => setReveal((v) => !v)}
-                  aria-label={reveal ? "Hide password" : "Show password"}
-                  aria-pressed={reveal}
-                  className="
+               <button
+                 type="button"
+                 onClick={() => setReveal((v) => !v)}
+                 aria-label={reveal ? "Hide password" : "Show password"}
+                 aria-pressed={reveal}
+                 className="
                     absolute right-3 top-1/2 -translate-y-1/2
                     inline-flex h-9 w-9 items-center justify-center
                     rounded-full border border-transparent
@@ -433,35 +436,35 @@
                     focus:outline-none
                     transition-colors
                   "
-                >
-                  {reveal ? (
-                    <EyeOffIcon className="h-6 w-6" />
-                  ) : (
-                    <EyeIcon className="h-6 w-6" />
-                  )}
-                </button>
-              </div>
-            </div>
+               >
+                 {reveal ? (
+                   <EyeOffIcon className="h-6 w-6" />
+                 ) : (
+                   <EyeIcon className="h-6 w-6" />
+                 )}
+               </button>
+             </div>
+           </div>
 
-            {/* CTA */}
-            <Button
-              type="submit"
-              isLoading={loading}
-              loadingText="Signing in…"
-              className="w-full mt-6"
-            >
-              Continue
-            </Button>
-          </form>
+           {/* CTA */}
+           <Button
+             type="submit"
+             isLoading={loading}
+             loadingText="Signing in…"
+             className="w-full mt-6"
+           >
+             Continue
+           </Button>
+         </form>
 
-          {/* Sign up line */}
-          <p className="text-center text-sm text-gray-600 mt-6">
-            Don’t have an account?{" "}
-            <Link to="/signup" className="text-blue-600 hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </div>
-      </div>
-    );
+         {/* Sign up line */}
+         <p className="text-center text-sm text-gray-600 mt-6">
+           Don’t have an account?{" "}
+           <Link to="/signup" className="text-blue-600 hover:underline">
+             Sign up
+           </Link>
+         </p>
+       </div>
+     </div>
+   );
   }

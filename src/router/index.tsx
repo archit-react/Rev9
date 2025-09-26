@@ -6,7 +6,7 @@ import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Signup from "@/pages/signup";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import AppLayout from "@/layout/AppLayout"; // ⬅️ renamed
+import AppLayout from "@/layout/AppLayout"; // 
 
 export const router = createBrowserRouter([
   // Public routes
