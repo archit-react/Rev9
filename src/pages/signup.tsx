@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api"; // keep your existing helper
 import Button from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import PageTitle from "@/components/PageTitle";
 
 
 // ---- Types & type-guard to avoid `any` --------------------------------
@@ -119,80 +120,82 @@ export default function Signup() {
     );
   }
 
-  return (
-    <div className="bg-white min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md px-6">
-        {/* Heading */}
-        <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-2">
-            Sign up
-          </h1>
-          <p className="text-gray-600 mb-8">Create your account below.</p>
-        </div>
+ return (
+   <div className="bg-white min-h-screen flex items-center justify-center">
+     <PageTitle title="Sign Up" />
 
-        {/* Error */}
-        {error && (
-          <div
-            role="alert"
-            aria-live="assertive"
-            className="mb-4 rounded-lg border border-red-500/40 bg-red-50 px-3 py-2 text-sm text-red-700"
-          >
-            {error}
-          </div>
-        )}
+     <div className="w-full max-w-md px-6">
+       {/* Heading */}
+       <div className="text-center">
+         <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-2">
+           Sign up
+         </h1>
+         <p className="text-gray-600 mb-8">Create your account below.</p>
+       </div>
 
-        {/* Form */}
-        <form onSubmit={handleRegister} noValidate>
-          {/* Username */}
-          <div className="mb-4">
-            <input
-              id="username"
-              name="username"
-              type="text"
-              placeholder="Username"
-              autoComplete="off"
-              className={pillInput}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
+       {/* Error */}
+       {error && (
+         <div
+           role="alert"
+           aria-live="assertive"
+           className="mb-4 rounded-lg border border-red-500/40 bg-red-50 px-3 py-2 text-sm text-red-700"
+         >
+           {error}
+         </div>
+       )}
 
-          {/* Email */}
-          <div className="mb-4">
-            <input
-              id="email"
-              name="email"
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              placeholder="Email address"
-              className={pillInput}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+       {/* Form */}
+       <form onSubmit={handleRegister} noValidate>
+         {/* Username */}
+         <div className="mb-4">
+           <input
+             id="username"
+             name="username"
+             type="text"
+             placeholder="Username"
+             autoComplete="off"
+             className={pillInput}
+             value={username}
+             onChange={(e) => setUsername(e.target.value)}
+             required
+           />
+         </div>
 
-          {/* Password with 👁️ toggle */}
-          <div className="mb-4 relative">
-            <input
-              id="password"
-              name="password"
-              type={reveal ? "text" : "password"}
-              autoComplete="new-password"
-              placeholder="Password"
-              className={`${pillInput} pr-12`}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setReveal((v) => !v)}
-              aria-label={reveal ? "Hide password" : "Show password"}
-              aria-pressed={reveal}
-              className="
+         {/* Email */}
+         <div className="mb-4">
+           <input
+             id="email"
+             name="email"
+             type="email"
+             inputMode="email"
+             autoComplete="email"
+             placeholder="Email address"
+             className={pillInput}
+             value={email}
+             onChange={(e) => setEmail(e.target.value)}
+             required
+           />
+         </div>
+
+         {/* Password with 👁️ toggle */}
+         <div className="mb-4 relative">
+           <input
+             id="password"
+             name="password"
+             type={reveal ? "text" : "password"}
+             autoComplete="new-password"
+             placeholder="Password"
+             className={`${pillInput} pr-12`}
+             value={password}
+             onChange={(e) => setPassword(e.target.value)}
+             required
+           />
+           <button
+             type="button"
+             onClick={() => setReveal((v) => !v)}
+             aria-label={reveal ? "Hide password" : "Show password"}
+             aria-pressed={reveal}
+             className="
                 absolute right-3 top-1/2 -translate-y-1/2
                 inline-flex h-9 w-9 items-center justify-center
                 rounded-full border border-transparent
@@ -200,37 +203,37 @@ export default function Signup() {
                 focus:outline-none
                 transition-colors
               "
-            >
-              {reveal ? (
-                <EyeOffIcon className="h-6 w-6" />
-              ) : (
-                <EyeIcon className="h-6 w-6" />
-              )}
-              <span className="sr-only">
-                {reveal ? "Hide password" : "Show password"}
-              </span>
-            </button>
-          </div>
+           >
+             {reveal ? (
+               <EyeOffIcon className="h-6 w-6" />
+             ) : (
+               <EyeIcon className="h-6 w-6" />
+             )}
+             <span className="sr-only">
+               {reveal ? "Hide password" : "Show password"}
+             </span>
+           </button>
+         </div>
 
-          {/* CTA */}
-          <Button
-            type="submit"
-            isLoading={loading}
-            loadingText="Creating…"
-            className="w-full mt-3"
-          >
-            Continue
-          </Button>
-        </form>
+         {/* CTA */}
+         <Button
+           type="submit"
+           isLoading={loading}
+           loadingText="Creating…"
+           className="w-full mt-3"
+         >
+           Continue
+         </Button>
+       </form>
 
-        {/* Already have an account */}
-        <p className="text-center text-sm text-gray-600 mt-6">
-          Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
-            Log in
-          </Link>
-        </p>
-      </div>
-    </div>
-  );
+       {/* Already have an account */}
+       <p className="text-center text-sm text-gray-600 mt-6">
+         Already have an account?{" "}
+         <Link to="/login" className="text-blue-600 hover:underline">
+           Log in
+         </Link>
+       </p>
+     </div>
+   </div>
+ );
 }
