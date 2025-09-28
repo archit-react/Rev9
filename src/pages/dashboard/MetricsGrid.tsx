@@ -1,32 +1,3 @@
-/* -------------------------------------------------------------------------------------------------
- * MetricsGrid
- *
- * Intent:
- *   Presentational-only component for the six KPI tiles at the top of the dashboard.
- *   Parent owns all data and delta strings; this stays dumb, predictable, and easy to test.
- *
- * Design:
- *   - No fetching, no derived math here. We accept already-formatted values.
- *   - Color the delta only for Users/Revenue (as originally implemented).
- *   - Keep DOM minimal to reduce layout thrash and keep CLS tight.
- *
- * Usage:
- *   <MetricsGrid
- *     users={count}
- *     revenue={revenue}
- *     conversion={conversion}
- *     sales={sales}
- *     engagement={engagement}
- *     bounceRate={bounceRate}
- *     usersDeltaText={usersDeltaText}
- *     revenueDeltaText={revenueDeltaText}
- *   />
- *
- * Trade-offs:
- *   - We pass individual props (vs one object) for prop-level type safety and simple call sites.
- *   - If this list grows, consider a schema array prop with renderers.
- * ------------------------------------------------------------------------------------------------ */
-
 type Props = {
   users: number;
   revenue: number;
