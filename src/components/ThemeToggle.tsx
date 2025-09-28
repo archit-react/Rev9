@@ -15,7 +15,7 @@ function SolidMoon({ className = "" }: { className?: string }) {
   );
 }
 
-/** Drop this anywhere to show the animated moon/sun button */
+
 export default function ThemeToggle({
   className = "",
   ariaLabelLight = "Switch to dark mode",
