@@ -1,4 +1,3 @@
-// src/pages/dashboard/DashboardHeader.tsx
 import HeaderActions from "@/components/header/HeaderActions";
 import PeriodToggle from "./PeriodToggle";
 import type { Period } from "./constants";
