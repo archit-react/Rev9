@@ -1,4 +1,3 @@
-// src/components/header/Rev9Logo.tsx
 import * as React from "react";
 
 type Props = { className?: string; label?: string };
