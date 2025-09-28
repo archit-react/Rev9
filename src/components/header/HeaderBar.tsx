@@ -50,7 +50,7 @@ export default function HeaderBar({
   const menuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(menuRef, () => setMenuOpen(false));
 
-  // JSR-like link styling (light/dark) + active weight
+  // link styling (light/dark) + active weight
   const linkBase =
     "outline-none focus-visible:ring-2 ring-indigo-400/40 hover:underline underline-offset-4 decoration-1 " +
     "text-gray-900 dark:text-cyan-300 dark:hover:text-cyan-200 transition";
