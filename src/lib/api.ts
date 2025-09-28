@@ -1,5 +1,3 @@
-// src/lib/api.ts
-
 // Use explicit env if provided (e.g. https://api.example.com)
 const ENV_API = import.meta.env?.VITE_API_URL?.trim();
 
@@ -71,6 +69,7 @@ function toHeaderRecord(h?: HeadersInit): Record<string, string> {
  *  - JSON.stringifies `options.json` (if provided)
  *  - safely parses JSON and throws on !response.ok
  */
+
 export async function fetchJson<T = unknown>(
   path: string,
   options: FetchJsonOptions = {}
@@ -112,7 +111,7 @@ export async function fetchJson<T = unknown>(
   return data as T;
 }
 
-/** Clear local auth (token only) + legacy cleanup. */
+
 export function logout() {
   if (!isBrowser) return;
   try {
