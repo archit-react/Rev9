@@ -1,9 +1,3 @@
-/* -------------------------------------------------------------------------------------------------
- * AnalyticalOverview — styled to match RevenueDistribution card
- * Same container (bg-surface + border-elev + card-inset + overflow-hidden),
- * same header placement (px-6 pt-5 pb-2), and same body paddings (px-4 sm:px-6 pb-6).
- * ------------------------------------------------------------------------------------------------ */
-
 import { TrendingUp, UserPlus, LineChart, Activity } from "lucide-react";
 
 type OverviewItem = {
