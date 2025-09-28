@@ -1,21 +1,3 @@
-/* -------------------------------------------------------------------------------------------------
- * useAnimatedCounters
- *
- * Intent:
- *   Drive the KPI tiles with a lightweight, frame-based tween so numbers “count up”
- *   to the selected period’s targets. Cheap, state-local, and dependency-free.
- *
- * Design notes:
- *   - Runs a short rAF loop on period change. We tween toward targets with a decaying step
- *     (ceil((target - current)/10)) for a quick ease-out feel without pulling in an animation lib.
- *   - Hook remains UI-agnostic: returns raw numbers only; formatting is a caller concern.
- *   - Bounded work: cancels rAF on unmount or when period flips.
- *
- * Trade-offs:
- *   - Not time-based; frame rate variations can alter the exact duration slightly.
- *     Good enough for dashboard candy; replace with spring if product needs precision.
- * ------------------------------------------------------------------------------------------------ */
-
 import { useEffect, useState } from "react";
 import { CURRENT } from "./constants";
 import type { Period } from "./constants";
