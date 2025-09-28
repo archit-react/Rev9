@@ -1,27 +1,5 @@
-/* -------------------------------------------------------------------------------------------------
- * Dashboard utilities (pure, framework-agnostic)
- *
- * Intent:
- *   Centralize small, well-tested helpers that multiple dashboard components rely on.
- *   These are intentionally side-effect free and easy to unit test.
- *
- * Guidelines:
- *   - Keep functions small and single-purpose.
- *   - No React imports here. No DOM reads except the explicit download helper.
- *   - Prefer explicit types over “any” to catch data shape drift at compile time.
- *
- * Testability:
- *   - pctChange/buildRevenueBreakdown/fmtMoney/buildRevenueReportCSV are pure and
- *     should be covered in unit tests.
- *   - downloadTextFile is a thin DOM wrapper; mock URL + anchor creation in tests.
- * ------------------------------------------------------------------------------------------------ */
-
 import type { Period, SliceDatum } from "./constants";
 import { CURRENT, METHOD_PCT } from "./constants";
-
-/* ================================================================================================
- * Formatting helpers
- * ================================================================================================= */
 
 /** Format whole-dollar currency for UI surfaces and CSV. Keep it locale-aware. */
 export const fmtMoney = (n: number): string =>
@@ -34,19 +12,6 @@ export const fmtMoney = (n: number): string =>
 export const pctChange = (curr: number, base: number): number =>
   base === 0 ? 0 : ((curr - base) / base) * 100;
 
-/* ================================================================================================
- * Revenue math
- * ================================================================================================= */
-
-/**
- * Build per-method revenue data from CURRENT[period] and METHOD_PCT[period].
- * - Rounds each slice to an integer.
- * - Reconciles the last slice to ensure exact sum === total (eliminates rounding drift).
- *
- * Why reconcile?
- *   UI + CSV require integers for dollars. Independent rounding can cause the sum to deviate.
- *   We assign the drift to the last slice to keep totals consistent.
- */
 export function buildRevenueBreakdown(period: Period): {
   total: number;
   data: SliceDatum[];
@@ -66,10 +31,6 @@ export function buildRevenueBreakdown(period: Period): {
 
   return { total, data };
 }
-
-/* ================================================================================================
- * CSV helpers
- * ================================================================================================= */
 
 /** Escape a single CSV field. Keeps Excel/Numbers happy (incl. UTF-8 BOM upstream). */
 function csvEscape(v: unknown): string {
@@ -137,10 +98,6 @@ export function buildRevenueReportCSV(args: {
 
   return toCsv(rows);
 }
-
-/* ================================================================================================
- * File download (browser)
- * ================================================================================================= */
 
 /**
  * Trigger a client-side download of a text blob.
