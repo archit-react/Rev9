@@ -1,4 +1,3 @@
-// src/components/header/BrandMark.tsx
 export default function BrandMark() {
   return (
     <div className="relative w-8 h-8 sm:w-9 sm:h-9 text-[#7c3aed] -translate-y-[1px] shrink-0">
