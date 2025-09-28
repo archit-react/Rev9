@@ -1,4 +1,3 @@
-// src/components/ui/button.tsx
 import { forwardRef } from "react";
 import type { ButtonHTMLAttributes } from "react";
 import { Loader2 } from "lucide-react";
