@@ -1,15 +1,3 @@
-/* -------------------------------------------------------------------------------------------------
- * RevenueDistribution
- *
- * Intent:
- *   Donut chart + right-side breakdown list for payment methods.
- *   Reads totals + layout “knobs” from constants; math comes from utils.
- *
- * Notes:
- *   - Typed legend/tooltip payloads to avoid implicit any.
- *   - Keep visual constants centralized to simplify designer tweaks.
- * ------------------------------------------------------------------------------------------------ */
-
 import {
   ResponsiveContainer,
   PieChart,
