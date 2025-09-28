@@ -1,18 +1,3 @@
-/* -------------------------------------------------------------------------------------------------
- * Dashboard constants & shared types
- *
- * Intent:
- *   Centralize data and “knobs” used across dashboard components. This keeps component files lean,
- *   makes tuning safe, and avoids magic numbers scattered everywhere.
- *
- * Constraints:
- *   - Import-only module: no side effects, no React imports, no functions.
- *   - Prefer explicit, narrow types. If shapes change, you want compile-time failures.
- *
- * Consumers:
- *   - Dashboard.tsx, MetricsGrid.tsx, RevenueTrend.tsx, RevenueDistribution.tsx, utils.ts
- * ------------------------------------------------------------------------------------------------ */
-
 export const PERIODS = ["Today", "This Week", "This Month"] as const;
 
 /** Canonical union for valid tabs. Use everywhere a period is referenced. */
@@ -27,11 +12,6 @@ export type SliceDatum = {
   pct: number;
 };
 
-/* =================================================================================================
- * Current metrics per period
- * - Source of truth for counters + CSV export.
- * - When backend lands, keep the shape and swap the provider.
- * ================================================================================================= */
 export const CURRENT: Record<
   Period,
   {
@@ -69,10 +49,6 @@ export const CURRENT: Record<
   },
 } as const;
 
-/* -------------------------------------------------------------------------------------------------
- * Baselines for delta math (Users/Revenue).
- * - Keep it tight. If you need more baselines later, extend shape with care.
- * ------------------------------------------------------------------------------------------------ */
 export const BASELINE: Record<Period, { users: number; revenue: number }> = {
   Today: { users: 116, revenue: 7233 }, // yesterday
   "This Week": { users: 518, revenue: 17166 }, // last week
@@ -86,11 +62,6 @@ export const COMPARE_LABEL: Record<Period, string> = {
   "This Month": "vs last month",
 };
 
-/* =================================================================================================
- * Revenue distribution (by payment method)
- * - Percent splits MUST sum ~1.0 per period. We reconcile last slice in utils.
- * - If you add a method, ensure SLICE_COLORS has ≥ that many entries.
- * ================================================================================================= */
 export const METHOD_PCT: Record<
   Period,
   Array<{ name: string; pct: number }>
@@ -115,17 +86,8 @@ export const METHOD_PCT: Record<
   ],
 };
 
-/* -------------------------------------------------------------------------------------------------
- * Visual palette for donut slices
- * - Order matters; index maps to METHOD_PCT order.
- * - Colors chosen for contrast on light/dark; brand-safe.
- * ------------------------------------------------------------------------------------------------ */
 export const SLICE_COLORS = ["#00A4EF", "#F25022", "#7FBA00", "#FFB900"]; // UPI, Card, Wallet, NetBanking
 
-/* =================================================================================================
- * Area chart data (last six full months) + baseline for delta badge
- * - Components and CSV export consume this. Keep shape stable.
- * ================================================================================================= */
 export const chartData: Array<{ month: string; revenue: number }> = [
   { month: "Mar", revenue: 18200 },
   { month: "Apr", revenue: 22100 },
@@ -138,11 +100,6 @@ export const chartData: Array<{ month: string; revenue: number }> = [
 /** Previous six months total (Sep–Feb). Used for the “+X%” badge on the trend card. */
 export const baseline6m = 130_880;
 
-/* =================================================================================================
- * Layout “knobs” for the Revenue Distribution card
- * - Non-semantic spacing/tuning values that designers iterate on frequently.
- * - Centralizing keeps component code clean and makes polish passes painless.
- * ================================================================================================= */
 export const RD = {
   /** px padding on the right to give the list breathing room against the card edge. */
   cardRightPad: 64,
