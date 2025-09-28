@@ -1,4 +1,3 @@
-// src/components/ProtectedRoute.tsx
 import { Navigate, useLocation } from "react-router-dom";
 import type { ReactElement, ReactNode } from "react";
 
