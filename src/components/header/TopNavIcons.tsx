@@ -1,9 +1,7 @@
-// src/components/header/TopNavIcons.tsx
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import * as React from "react";
 
-// Accepts the same shape as your NAV_LINKS items
 type NavItemLike = {
   to: string;
   label: string;
