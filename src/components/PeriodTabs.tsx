@@ -1,4 +1,3 @@
-// src/components/PeriodTabs.tsx
 import { useEffect, useRef } from "react";
 
 export type Period = "today" | "week" | "month";
