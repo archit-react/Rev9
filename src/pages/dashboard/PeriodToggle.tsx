@@ -1,22 +1,3 @@
-/* -------------------------------------------------------------------------------------------------
- * PeriodToggle
- *
- * Intent:
- *   Small, focused tab control for switching the dashboard period (Today | This Week | This Month).
- *   Animates press state for a tactile feel without introducing accessibility hazards.
- *
- * Trade-offs:
- *   - Uses framer-motion for a micro-scale “press” animation only; no layout shifts.
- *   - Keeps semantics correct (role=tablist / aria-selected) for screen readers.
- *
- * Usage:
- *   <PeriodToggle value={active} onChange={setActive} />
- *
- * Notes:
- *   - This is intentionally decoupled from any global theming or router concerns.
- *   - We import PERIODS/Period from constants to ensure the tabs and type union never diverge.
- * ------------------------------------------------------------------------------------------------ */
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { PERIODS, type Period } from "./constants";
