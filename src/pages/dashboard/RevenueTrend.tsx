@@ -1,15 +1,3 @@
-/* -------------------------------------------------------------------------------------------------
- * RevenueTrend
- *
- * Intent:
- *   Area chart showing revenue over the last six full months, with a delta badge
- *   vs. the previous six-month baseline. Keeps DOM lean and a11y safe.
- *
- * Notes:
- *   - Data + baseline come from ./constants to keep components dumb and testable.
- *   - Tooltip/XAxis tick are typed to avoid implicit any from Recharts.
- * ------------------------------------------------------------------------------------------------ */
-
 import {
   ResponsiveContainer,
   AreaChart,
