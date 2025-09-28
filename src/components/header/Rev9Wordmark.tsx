@@ -1,4 +1,3 @@
-// src/components/header/Rev9Wordmark.tsx
 type Props = { className?: string };
 
 export default function Rev9Wordmark({ className = "" }: Props) {
