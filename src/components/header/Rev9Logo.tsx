@@ -1,18 +1,6 @@
 // src/components/header/Rev9Logo.tsx
 import * as React from "react";
 
-/**
- * Rev9Logo
- * - Animated money gradient that gently pans (CSS keyframes)
- * - Soft outer glow (different in light vs dark)
- * - Per-letter slide-in (staggered) for a lively entrance
- * - Tiny “cash sparkles” that float up randomly (JSR-inspired)
- * - Respects prefers-reduced-motion
- *
- * Props:
- *  - className: pass height/width via Tailwind (e.g., "h-10 sm:h-12")
- *  - label: override text ("Rev9" by default)
- */
 type Props = { className?: string; label?: string };
 
 // Sparkle points (randomized once on module load)
