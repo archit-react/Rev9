@@ -1,4 +1,3 @@
-// src/App.tsx
 import { useEffect, useState } from "react";
 
 function App() {
@@ -64,8 +63,6 @@ function App() {
           </button>
         </div>
       </main>
-
-
     </div>
   );
 }

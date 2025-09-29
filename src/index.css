@@ -63,7 +63,7 @@ body {
   color: hsl(var(--foreground));
 }
 
-/* ✅ Full-width root (fix shrink) */
+
 #root {
   width: 100%;
   max-width: none;
