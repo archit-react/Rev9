@@ -296,7 +296,7 @@ export default function Login() {
   const pillInput =
     "w-full bg-white border border-gray-300 rounded-full h-12 px-5 " +
     "text-base text-gray-900 placeholder-gray-500 " +
-    "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset focus:border-transparent " +
+    "focus:outline-none focus:ring-inset focus:border-transparent " +
     "caret-blue-500 transition-shadow duration-200";
 
   // Icons
