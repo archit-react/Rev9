@@ -62,7 +62,7 @@ export default function Signup() {
         throw new Error(msg);
       }
 
-      // ✅ Redirect to Login with a success toast message
+      // Redirect to Login with a success toast message
       navigate("/login", {
         replace: true,
         state: { toast: "Account created. Please sign in." },

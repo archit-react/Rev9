@@ -295,7 +295,7 @@ export default function Login() {
   // shared Tailwind tokens
   const pillInput =
     "w-full bg-white border border-gray-300 rounded-full h-12 px-5 " +
-    "text-base text-gray-900 placeholder-gray-400 " +
+    "text-base text-gray-900 placeholder-gray-500 " +
     "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset focus:border-transparent " +
     "caret-blue-500 transition-shadow duration-200";
 
@@ -339,6 +339,24 @@ export default function Login() {
   return (
     <div className="relative bg-white min-h-screen flex items-center justify-center">
       <PageTitle title="Login" />
+
+      {/* Border reveal styles (must be inside JSX to render) */}
+      <style>{`
+      @keyframes rev9-border-reveal {
+        from { stroke-dashoffset: var(--len, 300); }
+        to   { stroke-dashoffset: 0; }
+      }
+      .reveal-outline {
+        stroke-dasharray: var(--len, 300);
+        stroke-dashoffset: var(--len, 300);
+        opacity: 0;
+      }
+      .group input:focus + svg .reveal-outline {
+        opacity: 1;
+        animation: rev9-border-reveal 700ms ease-out forwards;
+      }
+    `}</style>
+
       {/* Money rain sits behind everything */}
       <MoneyRain />
 
@@ -376,7 +394,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} noValidate>
           {/* Email */}
           <div id="email-section" className="space-y-4">
-            <div className="relative">
+            <div className="relative group">
               <input
                 id="email"
                 name="email"
@@ -384,13 +402,37 @@ export default function Login() {
                 inputMode="email"
                 autoComplete="email"
                 placeholder="Email address"
-                className={pillInput}
+                className={`${pillInput} relative z-0 focus:ring-0`} // turn off blue ring so black trace stands out
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={handleEmailKeyDown}
                 aria-describedby="email-help"
                 required
               />
+
+              {/* Black border reveal */}
+              <svg
+                className="pointer-events-none absolute left-0 top-0 w-full h-full z-10"
+                viewBox="0 0 400 48"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <g className="[--len:1000]">
+                  <rect
+                    x="2"
+                    y="2"
+                    width="396"
+                    height="44"
+                    rx="22"
+                    ry="22"
+                    fill="none"
+                    stroke="#000"
+                    strokeWidth="2.5"
+                    className="reveal-outline"
+                    opacity="0" // <-- extra safety; CSS will set to 1 on focus
+                  />
+                </g>
+              </svg>
             </div>
           </div>
 
