@@ -427,7 +427,7 @@ export default function Login() {
                     ry="22"
                     fill="none"
                     stroke="#000"
-                    strokeWidth="2.5"
+                    strokeWidth="2.0"
                     className="reveal-outline"
                     opacity="0" // <-- extra safety; CSS will set to 1 on focus
                   />
