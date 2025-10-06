@@ -402,7 +402,7 @@ export default function Login() {
                 inputMode="email"
                 autoComplete="email"
                 placeholder="Email address"
-                className={`${pillInput} relative z-0 focus:ring-0`} // turn off blue ring so black trace stands out
+                className={`${pillInput} relative z-0 focus:ring-0`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={handleEmailKeyDown}

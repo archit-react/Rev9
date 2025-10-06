@@ -68,7 +68,7 @@ export default function Signup() {
 
   const pillInput =
     "w-full bg-white border border-gray-300 rounded-full h-12 px-5 " +
-    "text-base font-medium text-gray-900 placeholder-gray-400 " +
+    "text-base text-gray-900 placeholder-gray-500 " +
     "focus:outline-none focus:ring-0 focus:border-transparent " +
     "caret-blue-500 transition-shadow duration-200";
 
