@@ -444,14 +444,14 @@ export default function Login() {
               showPasswordStep ? "max-h-40 mt-4" : "max-h-0",
             ].join(" ")}
           >
-            <div className="relative">
+            <div className="relative group">
               <input
                 id="password"
                 name="password"
                 type={reveal ? "text" : "password"}
                 autoComplete="current-password"
                 placeholder="Password"
-                className={`${pillInput} pr-12`}
+                className={`${pillInput} pr-12 relative z-0 focus:ring-0`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={handlePasswordKeyDown}
@@ -463,19 +463,43 @@ export default function Login() {
                 required={showPasswordStep}
               />
 
+              {/* Black border reveal */}
+              <svg
+                className="pointer-events-none absolute left-0 top-0 w-full h-full z-10"
+                viewBox="0 0 400 48"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <g className="[--len:1000]">
+                  <rect
+                    x="2"
+                    y="2"
+                    width="396"
+                    height="44"
+                    rx="22"
+                    ry="22"
+                    fill="none"
+                    stroke="#000"
+                    strokeWidth="2.0"
+                    className="reveal-outline"
+                    opacity="0"
+                  />
+                </g>
+              </svg>
+
               <button
                 type="button"
                 onClick={() => setReveal((v) => !v)}
                 aria-label={reveal ? "Hide password" : "Show password"}
                 aria-pressed={reveal}
                 className="
-                    absolute right-3 top-1/2 -translate-y-1/2
-                    inline-flex h-9 w-9 items-center justify-center
-                    rounded-full border border-transparent
-                    text-gray-500 hover:bg-gray-100 hover:text-gray-700
-                    focus:outline-none
-                    transition-colors
-                  "
+      absolute right-3 top-1/2 -translate-y-1/2
+      inline-flex h-9 w-9 items-center justify-center
+      rounded-full border border-transparent
+      text-gray-500 hover:bg-gray-100 hover:text-gray-700
+      focus:outline-none
+      transition-colors
+    "
               >
                 {reveal ? (
                   <EyeOffIcon className="h-6 w-6" />
