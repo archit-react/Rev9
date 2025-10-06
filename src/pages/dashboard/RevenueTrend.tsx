@@ -7,8 +7,8 @@ import {
   Tooltip,
 } from "recharts";
 import { chartData, baseline6m } from "./constants";
-import PeriodToggle from "./PeriodToggle"; // ← ADDED
-import type { Period } from "./constants"; // ← ADDED
+import PeriodToggle from "./PeriodToggle";
+import type { Period } from "./constants";
 
 type TooltipPayload = { value: number }[];
 
@@ -124,9 +124,9 @@ export default function RevenueTrend({ period, onChangePeriod }: Props) {
       <div
         className="
           no-chart-focus relative h-80 w-full px-4 sm:px-5 pb-6
-          [--stroke:#0ea5e9] [--fill1:rgba(14,165,233,0.30)] [--fill2:rgba(14,165,233,0)]
-          dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(56,189,248,0)]
-        "
+         [--stroke:#22c55e] [--fill1:rgba(34,197,94,0.30)] [--fill2:rgba(34,197,94,0)]
+         dark:[--stroke:#38bdf8] dark:[--fill1:rgba(56,189,248,0.18)] dark:[--fill2:rgba(56,189,248,0)]
+         "
         tabIndex={-1}
         onMouseDownCapture={(e) => e.preventDefault()} // prevent focus ring on click
         onFocusCapture={(e) => (e.target as HTMLElement)?.blur?.()} // and on keyboard focus
