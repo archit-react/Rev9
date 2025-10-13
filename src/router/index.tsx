@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import Dashboard from "@/pages/dashboard/dashboard";
 import Users from "@/pages/Users";
-import Settings from "@/pages/Settings";
+import Settings from "@/pages/settings";
 import Login from "@/pages/Login";
 import Signup from "@/pages/signup";
 import ProtectedRoute from "@/components/ProtectedRoute";

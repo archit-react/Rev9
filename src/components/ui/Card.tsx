@@ -1,3 +1,4 @@
+// src/components/ui/Card.tsx
 import type { PropsWithChildren } from "react";
 import { motion } from "framer-motion";
 
@@ -10,9 +11,13 @@ export default function Card({ children, className = "" }: CardProps) {
     <motion.div
       whileHover={{ y: -1 }}
       transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.6 }}
-      className={["glass-card rounded-2xl", "!transform-gpu", className].join(
-        " "
-      )}
+      className={[
+        // removed any glass or shadow, replaced with clean border style
+        "rounded-2xl bg-surface border border-[rgba(2,6,23,0.06)]",
+        "dark:border-[rgba(255,255,255,0.06)]",
+        "shadow-none transform-gpu",
+        className,
+      ].join(" ")}
     >
       {children}
     </motion.div>
