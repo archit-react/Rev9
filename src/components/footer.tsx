@@ -1,5 +1,5 @@
 // src/components/footer.tsx
-import { Linkedin, Github, Link as LinkIcon } from "lucide-react";
+import { Linkedin, Github, Briefcase } from "lucide-react";
 
 export default function FooterBar() {
   return (
@@ -14,6 +14,7 @@ export default function FooterBar() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40 rounded"
+              aria-label="LinkedIn"
             >
               <Linkedin className="w-5 h-5" />
             </a>
@@ -22,14 +23,19 @@ export default function FooterBar() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-[#7c3aed] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/30 rounded"
+              aria-label="GitHub"
             >
               <Github className="w-5 h-5" />
             </a>
             <a
-              href="#"
+              href="https://archits-portfolio.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-gray-400 hover:text-black dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/30 rounded"
+              aria-label="Portfolio"
+              title="Portfolio"
             >
-              <LinkIcon className="w-5 h-5" />
+              <Briefcase className="w-5 h-5" />
             </a>
           </div>
         </div>
