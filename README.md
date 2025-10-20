@@ -14,7 +14,6 @@ Backend provides **JWT auth**, **user APIs**, and **MongoDB** integration.
 
 ## Preview
 
-
 <br><br>
 
 ![Rev9 Login UI](public/screenshots/Rev9-login.png)
