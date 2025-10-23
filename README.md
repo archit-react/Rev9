@@ -1,4 +1,3 @@
-
 # Rev9 — Revenue Analytics Dashboard (React + TypeScript + Tailwind + Node/Express + MongoDB)
 
 A sleek analytics dashboard with light/dark theming, animated UI, and a production-ready backend.  
