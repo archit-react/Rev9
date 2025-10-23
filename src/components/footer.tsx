@@ -28,7 +28,7 @@ export default function FooterBar() {
               <Github className="w-5 h-5" />
             </a>
             <a
-              href="https://archits-portfolio.vercel.app"
+              href="https://archit.sbs"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-black dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/30 rounded"
