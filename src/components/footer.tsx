@@ -10,7 +10,7 @@ export default function FooterBar() {
           <p>© 2025 Rev9</p>
           <div className="flex items-center gap-4 sm:ml-auto">
             <a
-              href="https://www.linkedin.com/in/archit-react/"
+              href="https://www.linkedin.com/in/arch1t-in/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40 rounded"
