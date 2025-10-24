@@ -182,7 +182,7 @@ npm run dev
 
 **Archit Sharma** — Full-Stack Developer (Chandigarh, India)  
 - GitHub: https://github.com/archit-react  
-- LinkedIn: https://www.linkedin.com/in/archit-in
+- LinkedIn: https://www.linkedin.com/in/arch1t-in
 
 ---
 
