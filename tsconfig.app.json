@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "composite": true,                                   // ✅ add this
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
 
     "target": "ES2022",
@@ -31,13 +30,14 @@
       "@/*": ["src/*"]
     },
 
-    /* Quality-of-life */
+    /* QoL */
     "resolveJsonModule": true,
 
-    /* Proper typings for import.meta.env etc. */
-    "types": ["vite/client"]
-  },
+    /* Vite env typings */
+    "types": ["vite/client"],
 
-  /* Make sure all app sources + env types are included */
+    /* 🔑 Required for tsc --build */
+    "composite": true
+  },
   "include": ["src", "vite-env.d.ts", "src/vitest.setup.ts"]
 }
