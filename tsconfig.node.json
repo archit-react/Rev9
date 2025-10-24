@@ -1,16 +1,6 @@
+// package.json
 {
-  "compilerOptions": {
-    "composite": true,
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "skipLibCheck": true,
-    "noEmit": true,
-    "allowJs": true,
-
-    /* typings for Vite/Vitest + Node */
-    "types": ["node", "vitest", "vite/client"]
-  },
-  "include": ["vite.config.ts", "vitest.config.ts", "src/vitest.setup.ts"],
-  "exclude": ["node_modules", "dist"]
+  "scripts": {
+    "build": "tsc -p tsconfig.app.json && vite build"
+  }
 }
