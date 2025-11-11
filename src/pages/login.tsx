@@ -292,6 +292,36 @@ export default function Login() {
     }
   };
 
+  // New: demo login handler (client-only demo session)
+  const handleDemoLogin = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      // create a local demo token + lightweight demo user so protected routes that check localStorage token work
+      localStorage.setItem("token", "rev9-demo-token");
+      // store a small user object to help UI show demo identity if needed
+      try {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ role: "admin", name: "Demo User", demo: true })
+        );
+      } catch {
+        /* ignore localStorage set errors */
+      }
+
+      // navigate with same priority as normal login
+      if (nextUrl) {
+        navigate(nextUrl, { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    } catch {
+      setError("Unable to start demo session.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // shared Tailwind tokens
   const pillInput =
     "w-full bg-white border border-gray-300 rounded-full h-12 px-5 " +
@@ -519,14 +549,33 @@ export default function Login() {
           >
             Continue
           </Button>
+
+          {/* Demo CTA — match primary Continue button */}
+          <Button
+            type="button"
+            onClick={handleDemoLogin}
+            isLoading={loading}
+            loadingText="Starting demo…"
+            className="w-full mt-3"
+          >
+            Continue as demo
+          </Button>
         </form>
 
-        {/* Sign up line */}
+        {/* Sign up line with alternate action */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Don’t have an account?{" "}
           <Link to="/signup" className="text-blue-600 hover:underline">
             Sign up
           </Link>
+          {" • "}
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            className="text-sm text-gray-600 hover:underline"
+          >
+            Try demo
+          </button>
         </p>
       </div>
     </div>
