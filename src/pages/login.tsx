@@ -568,14 +568,6 @@ export default function Login() {
           <Link to="/signup" className="text-blue-600 hover:underline">
             Sign up
           </Link>
-          {" • "}
-          <button
-            type="button"
-            onClick={handleDemoLogin}
-            className="text-sm text-gray-600 hover:underline"
-          >
-            Try demo
-          </button>
         </p>
       </div>
     </div>
