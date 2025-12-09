@@ -1,4 +1,5 @@
-let uniqueSet = new Set([1, 1, 2, 2]);
-if (uniqueSet.has(1)) {
-    console.log("Set contains 1");
-}sd
+let map = {};
+map["apple"] = 1;
+if (map["apple"]) {
+    console.log("Apple exists in the map.");
+}
