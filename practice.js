@@ -1,5 +1,1 @@
-let map = {};
-map["apple"] = 1;
-if (map["apple"]) {
-    console.log("Apple exists in the map.");
-} d 
+let i = 0; i < numberValueTypes
